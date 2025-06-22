@@ -5,26 +5,31 @@ using UnityEngine;
 
 [UpdateInGroup(typeof(GhostInputSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-public partial class MouseInputGatherSys : SystemBase
+public partial struct MouseInputGatherSys : ISystem
 {
-    protected override void OnCreate()
+    Entity mi;
+    public void OnCreate(ref SystemState state)
     {
-        RequireForUpdate<MouseInput>();
+        mi = state.EntityManager.CreateSingleton<MouseInput>();
+        state.EntityManager.AddComponent<GhostOwnerIsLocal>(mi);
+        Debug.Log("MouseInput");
     }
-    protected override void OnUpdate()
+
+    public void OnUpdate(ref SystemState state)
     {
         Camera cam = Camera.main;
         if (cam == null) return;
+
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
-        float3 mouseWorld = float3.zero;
-        if (groundPlane.Raycast(ray, out float enter))
+        Plane plane = new Plane(Vector3.up, Vector3.zero);
+
+        if (plane.Raycast(ray, out float enter))
         {
-            mouseWorld = ray.GetPoint(enter);
+            state.EntityManager.SetComponentData(mi, new MouseInput
+            {
+                MouseWorldPos = (float3)ray.GetPoint(enter)
+            });
         }
-        Entities.WithAll<GhostOwnerIsLocal>().ForEach((ref MouseInput input) => {
-            input.MouseWorldPos = mouseWorld;
-        }).Run();
     }
 }
 

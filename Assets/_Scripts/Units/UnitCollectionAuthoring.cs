@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.NetCode;
 using UnityEngine;
 
 public class UnitCollectionAuthoring : MonoBehaviour

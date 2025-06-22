@@ -1,54 +1,35 @@
-using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.Transforms;
-using UnityEngine;
 
 public partial struct SpawnUnitSys : ISystem
 {
-    EntityQuery m_Requests;
     Entity prefab;
-    bool initialized;
-
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<UnitCollection>();
-        m_Requests = state.GetEntityQuery(ComponentType.ReadOnly<SpawnUnitRequest>());
+        state.RequireForUpdate<ReceiveRpcCommandRequest>();
     }
 
     public void OnUpdate(ref SystemState state)
     {
-        if (!initialized)
+        if (prefab == Entity.Null)
         {
             prefab = SystemAPI.GetSingleton<UnitCollection>().unit;
-            initialized = true;
         }
 
         var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
-                     .CreateCommandBuffer(state.WorldUnmanaged)
-                     .AsParallelWriter();
+                                   .CreateCommandBuffer(state.WorldUnmanaged);
 
-        var job = new SpawnJob
+        foreach (var (rpc, recv, entity) in
+                 SystemAPI.Query<SpawnUnitRequest, ReceiveRpcCommandRequest>()
+                           .WithEntityAccess())
         {
-            prefab = prefab,
-            ecb = ecb
-        };
-        state.Dependency = job.ScheduleParallel(m_Requests, state.Dependency);
-    }
-
-    [BurstCompile]
-    partial struct SpawnJob : IJobEntity
-    {
-        public EntityCommandBuffer.ParallelWriter ecb;
-        [ReadOnly] public Entity prefab;
-
-        void Execute([EntityIndexInQuery] int idx, Entity entity, in SpawnUnitRequest req)
-        {
-            var unit = ecb.Instantiate(idx, prefab);
-            ecb.SetComponent(idx, unit,
-            LocalTransform.FromPosition(req.pos));
-            ecb.DestroyEntity(idx, entity);
+            var unit = ecb.Instantiate(prefab);
+            ecb.SetComponent(unit, LocalTransform.FromPosition(rpc.pos));
+            ecb.AppendToBuffer(recv.SourceConnection, new LinkedEntityGroup { Value = unit });
+            ecb.DestroyEntity(entity);
         }
     }
 }
@@ -58,7 +39,7 @@ public struct UnitCollection : IComponentData
     public Entity unit;
 }
 
-public struct SpawnUnitRequest : IComponentData
+public struct SpawnUnitRequest : IRpcCommand
 {
     public float3 pos;
 }

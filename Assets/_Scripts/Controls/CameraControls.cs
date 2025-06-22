@@ -12,15 +12,15 @@ public class CameraControls : MonoBehaviour
 
     [HideInInspector] public GameObject active;
 
-    private void Start()
-    {
-        var world = World.DefaultGameObjectInjectionWorld;
-        if (!world.IsClient())
-        {
-            gameObject.SetActive(false);
-            return;
-        }
-    }
+    //private void Start()
+    //{
+    //    var world = World.DefaultGameObjectInjectionWorld;
+    //    if (!world.IsClient())
+    //    {
+    //        gameObject.SetActive(false);
+    //        return;
+    //    }
+    //}
 
     void OnGUI()
     {

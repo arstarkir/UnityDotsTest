@@ -1,29 +1,47 @@
+using System.Linq;
 using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 using Unity.NetCode;
+using UnityEngine;
 
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public class ClientClickSpawner : MonoBehaviour
 {
     EntityManager em;
     EntityQuery mouseQ;
+    EntityQuery connQ;
 
     void Awake()
     {
-        em = World.DefaultGameObjectInjectionWorld.EntityManager;
-        mouseQ = em.CreateEntityQuery(ComponentType.ReadOnly<MouseInput>(), ComponentType.ReadOnly<GhostOwnerIsLocal>());
+        var clientWorld = World.All.First(w => (w.Flags & WorldFlags.GameClient) != 0); 
+        em = clientWorld.EntityManager;
+
+        mouseQ = em.CreateEntityQuery(new EntityQueryDesc{ All = new[] { ComponentType.ReadOnly<MouseInput>() },
+        Options = EntityQueryOptions.IncludeSystems});
+
+        connQ = em.CreateEntityQuery(ComponentType.ReadOnly<NetworkId>());
     }
 
     void Update()
     {
-        var world = World.DefaultGameObjectInjectionWorld;
-        if (!world.IsClient())
-            return;
-
         if (!Input.GetKeyDown(KeyCode.U))
             return;
+        int cnt = mouseQ.CalculateEntityCount(); 
+        Debug.Log($"{em.World.Name}  {cnt} MouseInput singleton(s)");
+        if (cnt != 1) return;
 
-        var req = em.CreateEntity();
-        em.AddComponentData(req, new SpawnUnitRequest { pos = (float3)mouseQ.GetSingleton<MouseInput>().MouseWorldPos });
+
+        if (!mouseQ.TryGetSingleton(out MouseInput mi) || connQ.IsEmptyIgnoreFilter)
+            return;
+
+
+        var connEntity = connQ.GetSingletonEntity();
+
+        var rpc = em.CreateEntity();
+        em.AddComponentData(rpc, new SpawnUnitRequest { pos = mi.MouseWorldPos });
+        em.AddComponentData(rpc, new SendRpcCommandRequest
+        {
+            TargetConnection = Entity.Null
+        });
     }
 }

@@ -18,19 +18,27 @@ public partial struct ClickToMoveSystem : ISystem
 {
     EntityQuery mouseQ;
 
-    void Awake()
+    public void OnCreate(ref SystemState state)
     {
-        mouseQ = World.DefaultGameObjectInjectionWorld.EntityManager.
-            CreateEntityQuery(ComponentType.ReadOnly<MouseInput>(), ComponentType.ReadOnly<GhostOwnerIsLocal>());
+        mouseQ = state.GetEntityQuery(
+            ComponentType.ReadOnly<MouseInput>(),
+            ComponentType.ReadOnly<GhostOwnerIsLocal>());
+
+        state.RequireForUpdate(mouseQ);
     }
 
     public void OnUpdate(ref SystemState state)
     {
         if (!Input.GetMouseButtonDown(0) || Camera.main == null)
             return;
-
+        Debug.Log("A");
+        if (!SystemAPI.HasSingleton<MouseInput>())
+            return;
+        Debug.Log("B");
         Vector3 mPos = mouseQ.GetSingleton<MouseInput>().MouseWorldPos;
-        if (!NavMesh.SamplePosition(mPos, out var navHit, 2f, NavMesh.AllAreas)) return;
+        if (!NavMesh.SamplePosition(mPos, out var navHit, 2f, NavMesh.AllAreas))
+            return;
+        Debug.Log("C");
 
         var ecb = new EntityCommandBuffer(Allocator.Temp);
         foreach (var (tag, corners, lt, entity) in
