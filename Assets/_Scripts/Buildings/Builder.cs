@@ -81,6 +81,9 @@ public class Builder : NetworkBehaviour
 
         GameObject building = Instantiate(temp, pos, Quaternion.identity);
         NetworkObject netObj = building.GetComponent<NetworkObject>();
+        foreach (Transform t in netObj.gameObject.GetComponentsInChildren<Transform>(true))
+            t.gameObject.layer = 7;
+        building.AddComponent<UnitBuilding>().ownerId = requesterId;
 
         netObj.SpawnWithOwnership(requesterId);
         NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId].Despawn();
