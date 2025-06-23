@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 28
-  productGUID: a48e0c5054595794f9ac4770be4d10e4
+  productGUID: 2a7c0b7a5214b6e47b1b6138d960efa0
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: UnityDotsTest2
+  productName: RTS
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -82,7 +82,7 @@ PlayerSettings:
   androidApplicationEntry: 2
   defaultIsNativeResolution: 1
   macRetinaSupport: 1
-  runInBackground: 1
+  runInBackground: 0
   muteOtherAudioSources: 0
   Prepare IOS For Recording: 0
   Force IOS Speakers When Recording: 0
@@ -837,16 +837,16 @@ PlayerSettings:
   editorAssembliesCompatibilityLevel: 1
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: UnityDotsTest2
-  metroPackageVersion: 1.0.0.0
+  metroPackageName: RTS
+  metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: UnityDotsTest2
+  metroApplicationDescription: RTS
   wsaImages: {}
-  metroTileShortName: UnityDotsTest2
+  metroTileShortName: 
   metroTileShowName: 0
   metroMediumTileShowName: 0
   metroLargeTileShowName: 0
@@ -915,10 +915,10 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: 9f2165df-494c-424c-8af2-6362cfad9800
+  cloudProjectId: 38b075d1-0850-4163-9ab2-d15c99635347
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: UnityDotsTest2
+  projectName: RTS
   organizationId: arstarkir
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0

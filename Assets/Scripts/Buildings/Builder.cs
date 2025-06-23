@@ -1,0 +1,141 @@
+using System.Linq;
+using Unity.Netcode;
+using UnityEngine;
+
+public class Builder : NetworkBehaviour
+{
+    [HideInInspector] public bool isBuilding = false;
+    GameObject curBuilding;
+
+    void Update()
+    {
+        if (!IsLocalPlayer)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.B) && !isBuilding)
+        {
+            RequestSpawnBlueprintServerRpc(0);
+            isBuilding = true;
+        }
+
+        if (isBuilding && curBuilding != null)
+        {
+            RequestChangeMaterialServerRpc(curBuilding.GetComponent<NetworkObject>().NetworkObjectId, true);
+
+            Vector2 mousePos = Input.mousePosition;
+            Ray ray = GetComponentInChildren<Camera>().ScreenPointToRay(mousePos);
+            RaycastHit hit;
+            Physics.Raycast(ray, out hit);
+            RequestMoveBlueprintServerRpc(curBuilding.GetComponent<NetworkObject>().NetworkObjectId, hit.point);
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                isBuilding = false;
+                RequestSpawnBuildingServerRpc(curBuilding.GetComponent<NetworkObject>().NetworkObjectId, curBuilding.transform.position);
+            }
+        }
+    }
+
+    [ServerRpc]
+    void RequestSpawnBlueprintServerRpc(int buildID, ServerRpcParams rpcParams = default)
+    {
+        ulong requesterId = rpcParams.Receive.SenderClientId;
+
+        BuildingRegister buildingRegister = Resources.Load<BuildingRegister>("SO/MainBuildingRegister");
+        GameObject temp = Instantiate(buildingRegister.buildingDatas[buildID].prefab);
+        NetworkObject netObj = temp.GetComponent<NetworkObject>();
+        foreach (Transform obj in netObj.gameObject.GetComponentsInChildren<Transform>())
+        {
+            obj.gameObject.layer = 2;
+        }
+        netObj.gameObject.AddComponent<BuildingDataHandler>().buildingData = buildingRegister.buildingDatas[buildID];
+        netObj.SpawnWithOwnership(requesterId);
+        SetupBlueprintVisualsClientRpc(netObj.NetworkObjectId);
+        NotifyClientOfSpawnedObjectClientRpc(netObj.NetworkObjectId, requesterId);
+    }
+
+    [ClientRpc]
+    void SetupBlueprintVisualsClientRpc(ulong objectId, ClientRpcParams rpc = default)
+    {
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(objectId, out NetworkObject netObj))
+            return;
+
+        foreach (Transform t in netObj.gameObject.GetComponentsInChildren<Transform>(true))
+            t.gameObject.layer = 2;
+
+        if (!netObj.GetComponent<BuildingDataHandler>())
+        {
+            BuildingDataHandler buildingDataHandler = netObj.gameObject.AddComponent<BuildingDataHandler>();
+            buildingDataHandler.buildingData = Resources.Load<BuildingRegister>("SO/MainBuildingRegister").buildingDatas.First(b => b.prefab.name == netObj.name);
+        }
+    }
+
+    [ServerRpc]
+    void RequestSpawnBuildingServerRpc(ulong objectId, Vector3 pos, ServerRpcParams rpcParams = default)
+    {
+        ulong requesterId = rpcParams.Receive.SenderClientId;
+
+        BuildingRegister buildingRegister = Resources.Load<BuildingRegister>("SO/MainBuildingRegister");
+        GameObject temp = buildingRegister.buildingDatas.First(buildingData =>
+        buildingData.name == NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId].GetComponent<BuildingDataHandler>().buildingData.name).prefab;
+
+        GameObject building = Instantiate(temp, pos, Quaternion.identity);
+        NetworkObject netObj = building.GetComponent<NetworkObject>();
+
+        netObj.SpawnWithOwnership(requesterId);
+        NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId].Despawn();
+    }
+
+    [ServerRpc]
+    void RequestMoveBlueprintServerRpc(ulong objectId, Vector3 hitPoint, ServerRpcParams rpcParams = default)
+    {
+        NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId].transform.position = hitPoint;
+    }
+
+    [ClientRpc]
+    void NotifyClientOfSpawnedObjectClientRpc(ulong objectId, ulong targetClientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId != targetClientId)
+            return;
+
+        NetworkObject spawnedObj = NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId];
+        curBuilding = spawnedObj.gameObject;
+    }
+
+    [ServerRpc]
+    void RequestChangeMaterialServerRpc(ulong objectId, bool buildingStatus)
+    {
+        NetworkObject spawnedObj = NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId];
+
+        GameObject temp = spawnedObj.gameObject;
+        foreach (var r in temp.GetComponentsInChildren<Renderer>(true))
+        {
+            Material unique = r.material;
+            //unique.MakeAdditiveTransparent();
+            r.material = unique;
+        }
+
+        //if (!temp.GetComponent<BlinkAlpha>())
+        //    temp.AddComponent<BlinkAlpha>();
+
+        ChangeMaterialClientRpc(objectId);
+    }
+
+    [ClientRpc]
+    void ChangeMaterialClientRpc(ulong objectId, ClientRpcParams rpc = default)
+    {
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(objectId, out var netObj))
+            return;
+
+        GameObject temp = netObj.gameObject;
+        foreach (var r in temp.GetComponentsInChildren<Renderer>(true))
+        {
+            Material unique = r.material;
+            //unique.MakeAdditiveTransparent();
+            r.material = unique;
+        }
+
+        //if (!temp.GetComponent<BlinkAlpha>())
+        //    temp.gameObject.AddComponent<BlinkAlpha>();
+    }
+}
