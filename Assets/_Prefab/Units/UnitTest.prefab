@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6238891652705455875}
   - component: {fileID: 1124060595167668998}
   m_Layer: 0
-  m_Name: 'SelectionRing '
+  m_Name: SelectionRing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

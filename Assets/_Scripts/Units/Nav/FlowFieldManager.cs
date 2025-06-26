@@ -38,10 +38,12 @@ public class FlowFieldManager : MonoBehaviour
         Instance = null;
     }
 
-    public ushort BuildField(Vector3 goalWorld)
+    public ushort BuildField(Vector3 goalWorld, ushort forcedId = 0)
     {
         int2 goal = WorldToCellXZ(goalWorld);
-
+        ushort id = forcedId != 0 ? forcedId : nextId++;
+        if (fields.ContainsKey(id)) 
+            return id;
         var cost = new NativeArray<int>(walkable.Length, Allocator.TempJob);
         var dir = new NativeArray<float2>(walkable.Length, Allocator.Persistent);
 
@@ -69,7 +71,6 @@ public class FlowFieldManager : MonoBehaviour
         j2.Complete();
         cost.Dispose();
 
-        ushort id = nextId++;
         fields.Add(id, dir);
         return id;
     }

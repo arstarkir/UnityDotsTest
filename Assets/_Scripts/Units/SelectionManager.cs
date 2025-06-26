@@ -1,185 +1,94 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
-public class SelectionManager : NetworkBehaviour
+public class SelectionManager : MonoBehaviour
 {
-    [Header("UI")]
-    [Tooltip("An Image with a transparent sprite whose RectTransform you want to stretch while dragging.")]
-    public Image dragRect;
-
-    [Header("Input")]
-    public KeyCode addKey = KeyCode.LeftShift;
-    public KeyCode toggleKey = KeyCode.LeftControl;
-
-    public List<ulong> CurrentUnitIds => _selectedIds;
-    readonly List<ulong> _selectedIds = new();
+    public List<ulong> SelectedIds => _ids;
+    readonly List<ulong> _ids = new();
 
     Camera _cam;
-    Vector2 _dragStartScreen;
-    bool _isDragging;
+    Vector2 _start;
+    bool _drag;
 
-    static readonly Rect _empty = new Rect();
-
-    void Awake()
-    {
-        _cam = Camera.main;
-        if (dragRect != null) dragRect.gameObject.SetActive(false);
-    }
+    void Awake() => _cam = Camera.main;
 
     void Update()
     {
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            return;
 
         if (Input.GetMouseButtonDown(0))
         {
-            _dragStartScreen = Input.mousePosition;
-            _isDragging = false;
+            _start = Input.mousePosition;
+            _drag = false;
         }
 
         if (Input.GetMouseButton(0))
-        {
-            float sqrDrag = (Input.mousePosition - (Vector3)_dragStartScreen).sqrMagnitude;
-            if (!_isDragging && sqrDrag > 4f)
-            {
-                _isDragging = true;
-                if (dragRect != null) dragRect.gameObject.SetActive(true);
-            }
-
-            if (_isDragging && dragRect != null)
-                UpdateDragRect(_dragStartScreen, Input.mousePosition);
-        }
+            _drag |= (Input.mousePosition - (Vector3)_start).sqrMagnitude > 4f;
 
         if (Input.GetMouseButtonUp(0))
         {
-            if (_isDragging)
-            {
-                SelectByRectangle(ScreenRect(_dragStartScreen, Input.mousePosition));
-            }
-            else
-            {
-                SelectByClick(Input.mousePosition);
-            }
-
-            if (dragRect != null)
-            {
-                dragRect.rectTransform.anchoredPosition = Vector2.zero;
-                dragRect.rectTransform.sizeDelta = Vector2.zero;
-                dragRect.gameObject.SetActive(false);
-            }
+            if (_drag) BoxSelect(RectFrom(_start, Input.mousePosition));
+            else ClickSelect(Input.mousePosition);
         }
     }
 
-    void SelectByClick(Vector2 screenPos)
+    void ClickSelect(Vector2 screen)
     {
-        Ray ray = _cam.ScreenPointToRay(screenPos);
+        Ray ray = _cam.ScreenPointToRay(screen);
         if (!Physics.Raycast(ray, out var hit)) return;
 
-        FlowFollower unit = hit.collider.GetComponentInParent<FlowFollower>();
-        if (unit == null || !unit.IsOwner) return;
+        FlowFollower unit = hit.collider.transform.GetComponent<FlowFollower>();
+        if (unit == null) return;
+        if (!unit.IsOwner) return;
 
-        bool add = Input.GetKey(addKey);
-        bool toggle = Input.GetKey(toggleKey);
-
-        ulong id = unit.NetworkObjectId;
-
-        if (toggle)
-        {
-            if (_selectedIds.Contains(id)) Deselect(unit, id);
-            else AddSelect(unit, id);
-        }
-        else
-        {
-            if (!add) ClearAll();
-            AddSelect(unit, id);
-        }
+        ClearAll();
+        Add(unit);
+        Debug.Log(unit.gameObject.name);
     }
 
-    void SelectByRectangle(Rect screenRect)
+    void BoxSelect(Rect box)
     {
-        bool add = Input.GetKey(addKey);
-        bool toggle = Input.GetKey(toggleKey);
+        ClearAll();
 
-        if (!add && !toggle) ClearAll();
-
-        foreach (NetworkObject obj in NetworkManager.Singleton.SpawnManager.GetClientOwnedObjects(OwnerClientId))
+        foreach (var obj in NetworkManager.Singleton.SpawnManager.GetClientOwnedObjects(NetworkManager.Singleton.LocalClientId))
         {
-            if (!obj.TryGetComponent(out FlowFollower unit)) continue;
+            if (!obj.TryGetComponent(out FlowFollower unit)) 
+                continue;
 
             Vector2 sp = _cam.WorldToScreenPoint(unit.transform.position);
-            bool inside = screenRect.Contains(sp);
-
-            ulong id = obj.NetworkObjectId;
-
-            if (toggle)
+            if (box.Contains(sp))
             {
-                if (inside)
-                {
-                    if (_selectedIds.Contains(id)) Deselect(unit, id);
-                    else AddSelect(unit, id);
-                }
-            }
-            else if (inside)
-            {
-                AddSelect(unit, id);
-            }
+                Add(unit);
+                Debug.Log(unit.gameObject.name);
+            } 
         }
     }
 
-    void AddSelect(FlowFollower unit, ulong id)
+    void Add(FlowFollower u)
     {
-        if (_selectedIds.Contains(id)) return;
-
-        _selectedIds.Add(id);
-        SetHighlight(unit, true);
-    }
-
-    void Deselect(FlowFollower unit, ulong id)
-    {
-        if (!_selectedIds.Remove(id)) return;
-
-        SetHighlight(unit, false);
+        _ids.Add(u.NetworkObjectId);
+        ToggleRing(u, true);
     }
 
     void ClearAll()
     {
-        foreach (ulong id in _selectedIds)
-        {
-            if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(id, out var obj) &&
-                obj.TryGetComponent(out FlowFollower u))
-            {
-                SetHighlight(u, false);
-            }
-        }
-        _selectedIds.Clear();
+        foreach (ulong id in _ids)
+            if (NetworkManager.Singleton.SpawnManager.SpawnedObjects
+                                         .TryGetValue(id, out var o) &&
+                o.TryGetComponent(out FlowFollower u))
+                ToggleRing(u, false);
+
+        _ids.Clear();
     }
 
-    static void SetHighlight(Component unit, bool on)
+    static void ToggleRing(Component c, bool on)
     {
-        Transform ring = unit.transform.Find("SelectionRing");
-        Debug.Log("Name is " + unit.gameObject.name + " " + ring != null);
-        if (ring != null) 
+        Transform ring = c.transform.Find("SelectionRing");
+        if (ring) 
             ring.gameObject.SetActive(on);
     }
 
-    static Rect ScreenRect(Vector2 p1, Vector2 p2)
-    {
-        float xMin = Mathf.Min(p1.x, p2.x);
-        float yMin = Mathf.Min(p1.y, p2.y);
-        float xMax = Mathf.Max(p1.x, p2.x);
-        float yMax = Mathf.Max(p1.y, p2.y);
-        return new Rect(xMin, yMin, xMax - xMin, yMax - yMin);
-    }
-
-    void UpdateDragRect(Vector2 start, Vector2 end)
-    {
-        Rect r = ScreenRect(start, end);
-
-        var rt = dragRect.rectTransform;
-        rt.anchoredPosition = r.position;
-        rt.sizeDelta = r.size;
-    }
+    static Rect RectFrom(Vector2 a, Vector2 b) =>
+        new Rect(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y),
+                 Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
 }

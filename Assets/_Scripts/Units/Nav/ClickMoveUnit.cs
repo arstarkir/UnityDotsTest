@@ -1,52 +1,48 @@
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class ClickMoveUnit : NetworkBehaviour
 {
-    Camera cam;
-    [SerializeField] LayerMask groundMask = 1;
+    [SerializeField] LayerMask groundMask = ~0;
     [SerializeField] SelectionManager selection;
+
+    Camera _cam;
 
     public override void OnNetworkSpawn()
     {
-        if (IsOwner) cam = Camera.main;
+        if (IsOwner) _cam = Camera.main;
     }
 
     void Update()
     {
-        if (!IsOwner || cam == null) return;
+        if (!IsOwner || !_cam) return;
 
         if (Input.GetMouseButtonDown(1))
         {
-            if (Physics.Raycast(cam.ScreenPointToRay(Input.mousePosition),
-                                out var hit, 512f, groundMask))
-            {
-                List<ulong> ids = selection.CurrentUnitIds;
-                if (ids.Count > 0)
-                    SendGroupMoveServerRpc(hit.point, ids.ToArray());
-            }
+            List<ulong> ids = selection.SelectedIds;
+            if (ids.Count > 0)
+                SendMoveServerRpc(MouseWorldPosition.instance.GetPosition(), ids.ToArray());
+            Debug.Log(ids.Count);
         }
     }
 
     [Rpc(SendTo.Server)]
-    void SendGroupMoveServerRpc(Vector3 goal, ulong[] unitIds)
+    void SendMoveServerRpc(Vector3 goal, ulong[] unitIds)
     {
         ushort id = FlowFieldManager.Instance.BuildField(goal);
-
-        AssignFieldClientRpc(id, unitIds);
+        AssignFieldClientRpc(goal, id, unitIds);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    void AssignFieldClientRpc(ushort fieldId, ulong[] unitIds)
+    void AssignFieldClientRpc(Vector3 goal, ushort fieldId, ulong[] ids)
     {
-        foreach (ulong uid in unitIds)
-        {
-            if (NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(uid, out var obj))
-            {
-                if (obj.TryGetComponent(out FlowFollower ff))
-                    ff.flowId.Value = fieldId;
-            }
-        }
+        if (!FlowFieldManager.Instance.TrySample(fieldId, Vector3.zero, out _))
+            FlowFieldManager.Instance.BuildField(goal, fieldId);
+
+        foreach (ulong uid in ids)
+            if (NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(uid, out var o) &&
+                o.TryGetComponent(out FlowFollower f))
+                f.flowId.Value = fieldId;
     }
 }

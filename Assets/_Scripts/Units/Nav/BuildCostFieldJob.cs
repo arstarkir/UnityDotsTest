@@ -21,7 +21,10 @@ public struct BuildCostFieldJob : IJobParallelFor
     [ReadOnly] public NativeArray<byte> walkable;
     [WriteOnly] public NativeArray<int> cost;
 
-    public void Execute(int i) => cost[i] = walkable[i] == 0 ? int.MaxValue : 1;
+    public void Execute(int i)
+    {
+        cost[i] = walkable[i] == 0 ? int.MaxValue : int.MaxValue - 1;
+    }
 }
 
 [BurstCompile]
@@ -33,7 +36,6 @@ public struct IntegrateFieldJob : IJob
 
     static readonly int2[] Neigh = { new int2( 1,0), new int2(-1,0),
                                      new int2( 0,1), new int2( 0,-1) };
-
     public void Execute()
     {
         var frontier = new NativeQueue<int2>(Allocator.Temp);
@@ -52,8 +54,8 @@ public struct IntegrateFieldJob : IJob
                 if (!FlowFieldUtils.InBounds(nb, size)) continue;
 
                 int nbIdx = FlowFieldUtils.Index(nb, size);
-                if (cost[nbIdx] == int.MaxValue)
-                    continue;
+
+                if (cost[nbIdx] == int.MaxValue) continue;
 
                 if (cost[nbIdx] > baseCost + 1)
                 {
@@ -62,7 +64,6 @@ public struct IntegrateFieldJob : IJob
                 }
             }
         }
-
         frontier.Dispose();
     }
 }
@@ -107,4 +108,5 @@ public struct BuildFlowFieldJob : IJobParallelFor
 
         dir[index] = math.normalizesafe(bestStep);
     }
+
 }

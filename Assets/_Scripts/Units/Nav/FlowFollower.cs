@@ -9,15 +9,14 @@ public class FlowFollower : NetworkBehaviour
 
     void Update()
     {
-        if (!IsSpawned) 
-            return;
+        if (!IsSpawned) return;
 
         if (FlowFieldManager.Instance.TrySample(flowId.Value,
                                                 transform.position,
                                                 out float2 dir))
         {
-            transform.position += new Vector3(dir.x, 0f, dir.y) *
-                                   speed * Time.deltaTime;
+            transform.position += new Vector3(dir.x, 0, dir.y) *
+                                  speed * Time.deltaTime;
         }
     }
 }

@@ -20,7 +20,7 @@ public class CameraControls : NetworkBehaviour
 
     void OnGUI()
     {
-        transform.position -= Vector3.up * Input.GetAxis("Mouse ScrollWheel");
+        transform.position -= Vector3.up * 10 * Input.GetAxis("Mouse ScrollWheel");
     }
 
     void FixedUpdate()

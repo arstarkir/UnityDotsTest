@@ -10,8 +10,11 @@ public class UnitBuilding : CoreBuilding
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.U) && ownerId == OwnerClientId)
-            RequestSpawnUnitServerRpc(0, ownerId, this.transform.position + new Vector3(0,0,-6));
+        if (Input.GetKey(KeyCode.U) && ownerId == OwnerClientId)
+        {
+            RequestSpawnUnitServerRpc(0, ownerId, this.transform.position + new Vector3(0, 0, -6));
+            Debug.Log("Spawned");
+        }
     }
 
     [ServerRpc]
