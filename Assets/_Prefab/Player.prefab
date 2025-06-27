@@ -121,6 +121,7 @@ GameObject:
   - component: {fileID: 8794277652803434110}
   - component: {fileID: 1428069775819801273}
   - component: {fileID: 5565137880481106144}
+  - component: {fileID: -7063854138676729461}
   m_Layer: 0
   m_Name: Player
   m_TagString: MainCamera
@@ -409,10 +410,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 1
   selection: {fileID: 1509379043897164826}
+--- !u!114 &-7063854138676729461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3978795152394163180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8978f85fb6339b4b9fb1bc6867b9062, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkableColour: {r: 0, g: 1, b: 0, a: 0.18}
+  unwalkableColour: {r: 1, g: 0, b: 0, a: 0.25}
+  drawWalkable: 1
+  drawUnwalkable: 1
 --- !u!1 &7042703429980821754
 GameObject:
   m_ObjectHideFlags: 0

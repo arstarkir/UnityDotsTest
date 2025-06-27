@@ -3,14 +3,9 @@ using UnityEngine;
 
 public class UnitBuilding : CoreBuilding
 {
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
-        if (Input.GetKey(KeyCode.U))
+        if (Input.GetKeyDown(KeyCode.U))
         {
             RequestSpawnUnitServerRpc(0, ownerId, this.transform.position + new Vector3(0, 0, -6));
             Debug.Log("Spawned");

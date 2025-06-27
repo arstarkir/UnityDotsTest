@@ -83,8 +83,8 @@ public class Builder : NetworkBehaviour
 
         foreach (Transform t in netObj.gameObject.GetComponentsInChildren<Transform>(true))
             t.gameObject.layer = 7;
-
         netObj.SpawnWithOwnership(requesterId);
+        FlowFieldManager.Instance.MarkAreaUnwalkable(netObj.GetComponent<Collider>().bounds);
         NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId].Despawn();
     }
 

@@ -82,11 +82,29 @@ public class FlowFieldManager : MonoBehaviour
             return false;
 
         int2 cell = WorldToCellXZ(worldPos);
-        if (!FlowFieldUtils.InBounds(cell, gridSize)) return false;
+        if (!FlowFieldUtils.InBounds(cell, gridSize)) 
+            return false;
 
         dirOut = field[FlowFieldUtils.Index(cell, gridSize)];
         return true;
     }
+
+    public void MarkAreaUnwalkable(Bounds aabb)
+    {
+        float pad = 0.3f + cellSize * 0.01f;
+        aabb.Expand(pad * 2f);
+
+        int2 min = WorldToCellXZ(aabb.min);
+        int2 max = WorldToCellXZ(aabb.max);
+
+        for (int y = min.y; y <= max.y; y++)
+            for (int x = min.x; x <= max.x; x++)
+                walkable[FlowFieldUtils.Index(new int2(x, y), gridSize)] = 0;
+    }
+
+    public bool IsWalkable(int2 cell) =>
+    FlowFieldUtils.InBounds(cell, gridSize) &&
+    walkable[FlowFieldUtils.Index(cell, gridSize)] != 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     int2 WorldToCellXZ(Vector3 w) =>

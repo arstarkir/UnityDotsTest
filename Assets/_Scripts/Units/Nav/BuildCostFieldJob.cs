@@ -96,7 +96,11 @@ public struct BuildFlowFieldJob : IJobParallelFor
         for (int n = 0; n < Neigh.Length; n++)
         {
             int2 nb = cell + Neigh[n];
-            if (!FlowFieldUtils.InBounds(nb, size)) continue;
+            if (!FlowFieldUtils.InBounds(nb, size)) 
+                continue;
+
+            if (!DiagonalAllowed(cell, Neigh[n])) 
+                continue;
 
             int nbCost = cost[FlowFieldUtils.Index(nb, size)];
             if (nbCost < bestCost)
@@ -109,4 +113,16 @@ public struct BuildFlowFieldJob : IJobParallelFor
         dir[index] = math.normalizesafe(bestStep);
     }
 
+    bool DiagonalAllowed(int2 from, int2 step)
+    {
+        if (step.x == 0 || step.y == 0) 
+            return true;
+
+        int2 c1 = new int2(from.x + step.x, from.y);
+        int2 c2 = new int2(from.x, from.y + step.y);
+        return FlowFieldUtils.InBounds(c1, size) &&
+               FlowFieldUtils.InBounds(c2, size) &&
+               cost[FlowFieldUtils.Index(c1, size)] != int.MaxValue &&
+               cost[FlowFieldUtils.Index(c2, size)] != int.MaxValue;
+    }
 }

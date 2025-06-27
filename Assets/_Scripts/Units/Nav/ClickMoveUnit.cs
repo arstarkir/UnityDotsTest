@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class ClickMoveUnit : NetworkBehaviour
 {
-    [SerializeField] LayerMask groundMask = ~0;
     [SerializeField] SelectionManager selection;
 
     Camera _cam;
@@ -20,7 +19,7 @@ public class ClickMoveUnit : NetworkBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
-            List<ulong> ids = selection.SelectedIds;
+            List<ulong> ids = selection.GetUnitSelectedIds();
             if (ids.Count > 0)
                 SendMoveServerRpc(MouseWorldPosition.instance.GetPosition(), ids.ToArray());
             Debug.Log(ids.Count);

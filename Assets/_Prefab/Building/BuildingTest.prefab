@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 7598543919504933507}
   - component: {fileID: 567224987487260612}
   - component: {fileID: 9114696088445492751}
-  - component: {fileID: 1933707472441239970}
   - component: {fileID: -443766755044400517}
+  - component: {fileID: 2828819496922688132}
   m_Layer: 0
   m_Name: BuildingTest
   m_TagString: Untagged
@@ -108,20 +108,6 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!114 &1933707472441239970
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4909146624353110777}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 745aeabec8c03bd43a255fb231f63db8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  ownerId: 1
 --- !u!114 &-443766755044400517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,6 +121,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buildingData: {fileID: 0}
+--- !u!65 &2828819496922688132
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4909146624353110777}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0.6, y: 5, z: 0}
 --- !u!1001 &4475046058697530384
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -187,7 +194,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4931237791014579346, guid: 7c41964487b21dc4997089d9294c86f1, type: 3}
+    - {fileID: 4937912331849197189, guid: 7c41964487b21dc4997089d9294c86f1, type: 3}
+    - {fileID: 4931237791303182159, guid: 7c41964487b21dc4997089d9294c86f1, type: 3}
+    - {fileID: 4931237790868743350, guid: 7c41964487b21dc4997089d9294c86f1, type: 3}
+    - {fileID: 89944455995799410, guid: 7c41964487b21dc4997089d9294c86f1, type: 3}
+    - {fileID: 7490772103402523635, guid: 7c41964487b21dc4997089d9294c86f1, type: 3}
+    - {fileID: 6032921621049133554, guid: 7c41964487b21dc4997089d9294c86f1, type: 3}
+    - {fileID: 4926946806175089079, guid: 7c41964487b21dc4997089d9294c86f1, type: 3}
+    - {fileID: 4931040903270222243, guid: 7c41964487b21dc4997089d9294c86f1, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
