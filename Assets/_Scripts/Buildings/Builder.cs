@@ -44,18 +44,19 @@ public class Builder : NetworkBehaviour
         BuildingRegister buildingRegister = Resources.Load<BuildingRegister>("SO/MainBuildingRegister");
         GameObject temp = Instantiate(buildingRegister.buildingDatas[buildID].prefab);
         NetworkObject netObj = temp.GetComponent<NetworkObject>();
+        netObj.gameObject.GetComponent<BuildingDataHandler>().buildingData = buildingRegister.buildingDatas[buildID];
+
         foreach (Transform obj in netObj.gameObject.GetComponentsInChildren<Transform>())
         {
             obj.gameObject.layer = 2;
         }
-        netObj.gameObject.AddComponent<BuildingDataHandler>().buildingData = buildingRegister.buildingDatas[buildID];
         netObj.SpawnWithOwnership(requesterId);
-        SetupBlueprintVisualsClientRpc(netObj.NetworkObjectId);
+        SetupBlueprintVisualsClientRpc(netObj.NetworkObjectId, buildID);
         NotifyClientOfSpawnedObjectClientRpc(netObj.NetworkObjectId, requesterId);
     }
 
     [ClientRpc]
-    void SetupBlueprintVisualsClientRpc(ulong objectId, ClientRpcParams rpc = default)
+    void SetupBlueprintVisualsClientRpc(ulong objectId, int buildID, ClientRpcParams rpc = default)
     {
         if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(objectId, out NetworkObject netObj))
             return;
@@ -63,11 +64,8 @@ public class Builder : NetworkBehaviour
         foreach (Transform t in netObj.gameObject.GetComponentsInChildren<Transform>(true))
             t.gameObject.layer = 2;
 
-        if (!netObj.GetComponent<BuildingDataHandler>())
-        {
-            BuildingDataHandler buildingDataHandler = netObj.gameObject.AddComponent<BuildingDataHandler>();
-            buildingDataHandler.buildingData = Resources.Load<BuildingRegister>("SO/MainBuildingRegister").buildingDatas.First(b => b.prefab.name == netObj.name);
-        }
+        BuildingRegister buildingRegister = Resources.Load<BuildingRegister>("SO/MainBuildingRegister");
+        netObj.GetComponent<BuildingDataHandler>().buildingData = buildingRegister.buildingDatas[buildID];
     }
 
     [ServerRpc]
@@ -78,12 +76,13 @@ public class Builder : NetworkBehaviour
         BuildingRegister buildingRegister = Resources.Load<BuildingRegister>("SO/MainBuildingRegister");
         GameObject temp = buildingRegister.buildingDatas.First(buildingData =>
         buildingData.name == NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId].GetComponent<BuildingDataHandler>().buildingData.name).prefab;
-
+        
         GameObject building = Instantiate(temp, pos, Quaternion.identity);
         NetworkObject netObj = building.GetComponent<NetworkObject>();
+        netObj.gameObject.AddComponent<UnitBuilding>().ownerId = requesterId;
+
         foreach (Transform t in netObj.gameObject.GetComponentsInChildren<Transform>(true))
             t.gameObject.layer = 7;
-        building.AddComponent<UnitBuilding>().ownerId = requesterId;
 
         netObj.SpawnWithOwnership(requesterId);
         NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId].Despawn();
