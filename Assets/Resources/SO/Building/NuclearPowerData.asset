@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 031eab3349935414e8054b1e996500ec, type: 3}
+  m_Name: NuclearPowerData
+  m_EditorClassIdentifier: 
+  buildingName: Chernobyl Nuclear Power
+  description: I would be careful with this one
+  prefab: {fileID: 8332962215768935062, guid: 16f5b256ae4febc43b3b270997326e3a, type: 3}
