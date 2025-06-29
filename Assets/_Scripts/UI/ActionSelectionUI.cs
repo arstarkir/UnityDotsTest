@@ -16,12 +16,11 @@ public class ActionSelectionUI : MonoBehaviour
         UnitRegister unitRegister = Resources.Load<UnitRegister>("SO/MainUnitRegister");
         for (int i = 0; i < unitId.Count; i++) 
         {
-            GameObject temp = Instantiate(actionButtonPref,
-                new Vector3(200, 0, 0) + i*(new Vector3(-125,0,0)),Quaternion.identity,actionSelection.transform);
-            temp.transform.position = new Vector3 (temp.transform.position.x, 0,0);
+            GameObject temp = Instantiate(actionButtonPref,actionSelection.transform);
+            temp.GetComponent<RectTransform>().anchoredPosition = new Vector2(-200 + 125 * i, 0);
             temp.GetComponent<Image>().sprite = unitRegister.unitDatas[unitId[i]].sprite;
+            temp.GetComponent<Button>().onClick.AddListener(() =>  UnitSelected(0));
             curActions.Add(temp);
-            //temp.GetComponent<Button>().onClick.AddListener();
         }
     }
 
@@ -32,8 +31,8 @@ public class ActionSelectionUI : MonoBehaviour
         curActions.Clear();
     }
 
-    //public void BuildingSelected(int buildingID)
-    //{
-    //    player.GetComponent<Builder>().buildID = buildingID;
-    //}
+    public void UnitSelected(int unitID)
+    {
+        //player.GetComponent<Builder>().buildID = buildingID;
+    }
 }

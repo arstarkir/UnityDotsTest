@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 public class SelectionManager : MonoBehaviour
 {
     [SerializeField] GameObject actionSelection;
-
+    ActionSelectionUI actionSelectionUI;
     public List<ulong> SelectedIds => _ids;
     readonly List<ulong> _ids = new();
 
@@ -16,8 +16,11 @@ public class SelectionManager : MonoBehaviour
     Vector2 _start;
     bool _drag;
 
-    void Awake() => _cam = Camera.main;
-
+    void Awake()
+    {
+        _cam = Camera.main;
+        actionSelectionUI = actionSelection.GetComponent<ActionSelectionUI>();
+    }
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -43,11 +46,11 @@ public class SelectionManager : MonoBehaviour
         BuildingSelect(screen);
         if(_ids.Count == 0)
             UnitSelect(screen);
-
+        actionSelectionUI.ClearActions();
         ulong bd = IdenticalBuildingsSelected();
         if (bd != 0)
             if (NetworkManager.Singleton.SpawnManager.SpawnedObjects[bd].TryGetComponent<BuildingAction>(out BuildingAction ba))
-                actionSelection.GetComponent<ActionSelectionUI>().PopulateActionUI(ba.unitIDs);
+                actionSelectionUI.PopulateActionUI(ba.unitIDs);
     }
 
     void UnitSelect(Vector2 screen)
