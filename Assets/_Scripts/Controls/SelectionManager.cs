@@ -7,6 +7,8 @@ using UnityEngine.UIElements;
 
 public class SelectionManager : MonoBehaviour
 {
+    [SerializeField] GameObject actionSelection;
+
     public List<ulong> SelectedIds => _ids;
     readonly List<ulong> _ids = new();
 
@@ -41,6 +43,11 @@ public class SelectionManager : MonoBehaviour
         BuildingSelect(screen);
         if(_ids.Count == 0)
             UnitSelect(screen);
+
+        ulong bd = IdenticalBuildingsSelected();
+        if (bd != 0)
+            if (NetworkManager.Singleton.SpawnManager.SpawnedObjects[bd].TryGetComponent<BuildingAction>(out BuildingAction ba))
+                actionSelection.GetComponent<ActionSelectionUI>().PopulateActionUI(ba.unitIDs);
     }
 
     void UnitSelect(Vector2 screen)
@@ -53,7 +60,6 @@ public class SelectionManager : MonoBehaviour
         if (!unit.IsOwner) return;
 
         Add(unit.GetComponent<NetworkObject>());
-        Debug.Log(unit.gameObject.name);
     }
 
     void BuildingSelect(Vector2 screen)
@@ -68,7 +74,6 @@ public class SelectionManager : MonoBehaviour
             return;
 
         Add(building.GetComponent<NetworkObject>());
-        Debug.Log(building.gameObject.name);
     }
 
     void BoxSelect(Rect box)
@@ -91,6 +96,11 @@ public class SelectionManager : MonoBehaviour
                 continue;
             }
         }
+
+        ulong bd = IdenticalBuildingsSelected();
+        if (bd != 0)
+            if(NetworkManager.Singleton.SpawnManager.SpawnedObjects[bd].TryGetComponent<BuildingAction>(out BuildingAction ba))
+                actionSelection.GetComponent<ActionSelectionUI>().PopulateActionUI(ba.unitIDs);
     }
 
     void UnitBoxSelect(Rect box, Transform tr)
@@ -155,4 +165,19 @@ public class SelectionManager : MonoBehaviour
     {
          return 0 != _ids.FirstOrDefault(id => NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].TryGetComponent<CoreBuilding>(out CoreBuilding cb));
     }
+
+    public ulong IdenticalBuildingsSelected()
+    {
+        ulong cb = _ids.FirstOrDefault(id => NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].TryGetComponent<CoreBuilding>(out CoreBuilding cb));
+
+        if (0 == cb)
+            return 0;
+
+        BuildingData bd = NetworkManager.Singleton.SpawnManager.SpawnedObjects[cb].GetComponent<BuildingDataHandler>().buildingData;
+        if(_ids.All(id => NetworkManager.Singleton.SpawnManager.SpawnedObjects[cb].GetComponent<BuildingDataHandler>().buildingData == bd))
+            return cb;
+
+        return 0;
+    }
+
 }

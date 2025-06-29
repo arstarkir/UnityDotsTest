@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5469058453257572283}
   - component: {fileID: 3802302018912685934}
   - component: {fileID: 753822456754222437}
+  - component: {fileID: 7825819934682115331}
   m_Layer: 0
   m_Name: Teotihuacan
   m_TagString: Untagged
@@ -49,7 +50,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2854309965
+  GlobalObjectIdHash: 1346530439
   InScenePlacedSourceGlobalObjectIdHash: 2873295194
   DeferredDespawnTick: 0
   Ownership: 1
@@ -120,7 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90ab62979fe6fac47b27dec40b8b372c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingData: {fileID: 0}
+  buildingData: {fileID: 11400000, guid: 304cc8558e69cdd4cb94aa01fa93e375, type: 2}
 --- !u!65 &753822456754222437
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -142,6 +143,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 10, y: 10, z: 10}
   m_Center: {x: 0.6, y: 5, z: 0}
+--- !u!114 &7825819934682115331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371404245313902897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a1feb718a93fe94b89696c1d04e3d38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitIDs: 0100000000000000
 --- !u!1 &1609406674911399343
 GameObject:
   m_ObjectHideFlags: 0
