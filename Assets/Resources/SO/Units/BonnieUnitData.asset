@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: BonnieUnitData
   m_EditorClassIdentifier: 
   unitName: Bonnie
-  description: He's just a guy
+  description: He's just a lil guy
+  sprite: {fileID: 21300000, guid: adf5166110c912543ac39dd11b1dfe8a, type: 3}
   prefab: {fileID: 7913246730802463883, guid: 437d63c5eb9085a45b45156e79c19f34, type: 3}

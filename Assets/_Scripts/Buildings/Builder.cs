@@ -6,7 +6,7 @@ public class Builder : NetworkBehaviour
 {
     [HideInInspector] public bool isBuilding = false;
     GameObject curBuilding;
-
+    public int buildID = 0;
     void Update()
     {
         if (!IsLocalPlayer)
@@ -14,7 +14,7 @@ public class Builder : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.B) && !isBuilding)
         {
-            RequestSpawnBlueprintServerRpc(0);
+            RequestSpawnBlueprintServerRpc(buildID);
             isBuilding = true;
         }
 

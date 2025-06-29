@@ -147,6 +147,10 @@ MonoBehaviour:
   flowId:
     m_InternalValue: 0
   speed: 8
+  unitRadius: 0.4
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 4294967288
 --- !u!1001 &3217198027743177168
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -201,7 +205,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3308892970006693704, guid: ff508f4514bf5ae40bb552879794b393, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

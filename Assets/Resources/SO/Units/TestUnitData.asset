@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: TestUnitData
   m_EditorClassIdentifier: 
   unitName: Jeff
-  description: He's just a guy
+  description: A guy
+  sprite: {fileID: 21300000, guid: d2761c827691244499badb2775cd535c, type: 3}
   prefab: {fileID: 7913246730802463883, guid: 95d800acb9fe3f24792b5a0d3c46c3c2, type: 3}
