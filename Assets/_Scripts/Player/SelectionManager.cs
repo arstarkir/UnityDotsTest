@@ -41,11 +41,16 @@ public class SelectionManager : MonoBehaviour
 
     void ClickSelect(Vector2 screen)
     {
+        List<ulong> temp = new List<ulong>(_ids);
         ClearAll();
 
         BuildingSelect(screen);
         if(_ids.Count == 0)
             UnitSelect(screen);
+        if (_ids.Count == 0)
+            foreach (ulong id in temp)
+                _ids.Add(id);
+
         actionSelectionUI.ClearActions();
         ulong bd = IdenticalBuildingsSelected();
         if (bd != 0)
@@ -110,20 +115,14 @@ public class SelectionManager : MonoBehaviour
     {
         Vector2 sp = _cam.WorldToScreenPoint(tr.position);
         if (box.Contains(sp))
-        {
             Add(tr.GetComponent<NetworkObject>());
-            Debug.Log(tr.gameObject.name);
-        }
     }
 
     void BuildingBoxSelect(Rect box, Transform tr)
     {
         Vector2 sp = _cam.WorldToScreenPoint(tr.position);
         if (box.Contains(sp))
-        {
             Add(tr.GetComponent<NetworkObject>());
-            Debug.Log(tr.gameObject.name);
-        }
     }
 
     void Add(NetworkObject nb)

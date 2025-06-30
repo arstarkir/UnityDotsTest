@@ -7,13 +7,13 @@ public class UnitBuilding : CoreBuilding
     {
         if (Input.GetKeyDown(KeyCode.U))
         {
-            RequestSpawnUnitServerRpc(0, ownerId, this.transform.position + new Vector3(0, 0, -6));
+            RequestSpawnUnitServerRpc(0, this.transform.position + new Vector3(0, 0, -6));
             Debug.Log("Spawned");
         }
     }
 
     [ServerRpc]
-    void RequestSpawnUnitServerRpc(int unitId, ulong ownerId, Vector3 pos, ServerRpcParams rpcParams = default)
+    void RequestSpawnUnitServerRpc(int unitId, Vector3 pos, ServerRpcParams rpcParams = default)
     {
         ulong requesterId = rpcParams.Receive.SenderClientId;
 

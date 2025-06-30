@@ -79,7 +79,6 @@ public class Builder : NetworkBehaviour
         
         GameObject building = Instantiate(temp, pos, Quaternion.identity);
         NetworkObject netObj = building.GetComponent<NetworkObject>();
-        netObj.gameObject.AddComponent<UnitBuilding>().ownerId = requesterId;
 
         foreach (Transform t in netObj.gameObject.GetComponentsInChildren<Transform>(true))
             t.gameObject.layer = 7;
