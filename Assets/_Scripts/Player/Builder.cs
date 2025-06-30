@@ -7,6 +7,7 @@ public class Builder : NetworkBehaviour
     [HideInInspector] public bool isBuilding = false;
     GameObject curBuilding;
     public int buildID = 0;
+
     void Update()
     {
         if (!IsLocalPlayer)
@@ -43,13 +44,13 @@ public class Builder : NetworkBehaviour
 
         BuildingRegister buildingRegister = Resources.Load<BuildingRegister>("SO/MainBuildingRegister");
         GameObject temp = Instantiate(buildingRegister.buildingDatas[buildID].prefab);
+        foreach (CoreBuilding buildingComp in temp.GetComponents<CoreBuilding>())
+            buildingComp.enabled = false;
         NetworkObject netObj = temp.GetComponent<NetworkObject>();
         netObj.gameObject.GetComponent<BuildingDataHandler>().buildingData = buildingRegister.buildingDatas[buildID];
 
         foreach (Transform obj in netObj.gameObject.GetComponentsInChildren<Transform>())
-        {
             obj.gameObject.layer = 2;
-        }
         netObj.SpawnWithOwnership(requesterId);
         SetupBlueprintVisualsClientRpc(netObj.NetworkObjectId, buildID);
         NotifyClientOfSpawnedObjectClientRpc(netObj.NetworkObjectId, requesterId);
@@ -60,6 +61,9 @@ public class Builder : NetworkBehaviour
     {
         if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(objectId, out NetworkObject netObj))
             return;
+
+        foreach (CoreBuilding buildingComp in netObj.GetComponents<CoreBuilding>())
+            buildingComp.enabled = false;
 
         foreach (Transform t in netObj.gameObject.GetComponentsInChildren<Transform>(true))
             t.gameObject.layer = 2;

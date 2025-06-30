@@ -1,10 +1,22 @@
 using UnityEngine;
+using Unity.Netcode;
+using UnityEditor.PackageManager;
 
 public class StorageBuilding : CoreBuilding
 {
     public ResTypes rType;
     public float maxStorage = 100;
     public float curStorage = 0;
+    PlayerResources player;
+
+    void Start()
+    {
+        if(OwnerClientId == NetworkManager.Singleton.LocalClientId)
+        {
+            player = FindAnyObjectByType<PlayerResources>();
+            player.AddStorage(this);
+        }
+    }
 
     public float AddRes(float amount)
     {
@@ -25,6 +37,15 @@ public class StorageBuilding : CoreBuilding
             amount += curStorage;
             curStorage = 0;
             return amount;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (OwnerClientId == NetworkManager.Singleton.LocalClientId && this.enabled)
+        {
+            player.RemoveStorage(this);
+            player.AddRes(-curStorage, rType);
         }
     }
 }

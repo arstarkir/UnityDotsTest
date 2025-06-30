@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -443766755044400517}
   - component: {fileID: 2828819496922688132}
   - component: {fileID: 1621115548246774270}
+  - component: {fileID: 3243916915244383722}
   m_Layer: 0
   m_Name: BuildingTest
   m_TagString: Untagged
@@ -121,7 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90ab62979fe6fac47b27dec40b8b372c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingData: {fileID: 0}
+  buildingData: {fileID: 11400000, guid: 642aee187954f644482115301e003a73, type: 2}
 --- !u!65 &2828819496922688132
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -156,10 +157,57 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  ownerId: 0
   rType: 1
   maxStorage: 100
   curStorage: 0
+--- !u!114 &3243916915244383722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4909146624353110777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa7dad840cf8426458517eb7abeaba38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  rType: 1
+  prodOverTime:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 9.984322
+      value: 1.0062132
+      inSlope: 0.1383384
+      outSlope: 0.1383384
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.34004
+      outWeight: 1
+    - serializedVersion: 3
+      time: 15.013488
+      value: 10.025858
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  prodTime: 1
 --- !u!1001 &4475046058697530384
 PrefabInstance:
   m_ObjectHideFlags: 0
