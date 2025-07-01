@@ -9,11 +9,20 @@ public class ActionSelectionUI : MonoBehaviour
     [SerializeField] GameObject player;
     List<string> shortcuts = new List<string>();
 
+    UnitRegister unitRegister;
+    PlayerResources pResources;
+    
     List<GameObject> curActions = new List<GameObject>();
-    public void PopulateActionUI(List<int> unitId, BuildingAction bAction)
+
+    void Start()
+    {
+        pResources = player.GetComponent<PlayerResources>();
+        unitRegister = Resources.Load<UnitRegister>("SO/MainUnitRegister");
+    }
+
+    public void PopulateActionUI(List<int> unitId, List<BuildingAction> bAction)
     {
         ClearActions();
-        UnitRegister unitRegister = Resources.Load<UnitRegister>("SO/MainUnitRegister");
         for (int i = 0; i < unitId.Count; i++) 
         {
             GameObject temp = Instantiate(actionButtonPref,actionSelection.transform);
@@ -33,9 +42,17 @@ public class ActionSelectionUI : MonoBehaviour
         curActions.Clear();
     }
 
-    public void UnitSelected(ButtonActionData bAD, BuildingAction bAction)
+    public void UnitSelected(ButtonActionData bAD, List<BuildingAction> bAction)
     {
-        bAction.gameObject.GetComponent<UnitBuilding>().RequestRequestSpawnUnit(bAD.unitID);
+        foreach (BuildingAction bA in bAction)
+        {
+            UnitBuilding uB = bA.gameObject.GetComponent<UnitBuilding>();
+            if (pResources.HasRes(unitRegister.unitDatas[bAD.unitID].cost))
+            {
+                pResources.PayCost(unitRegister.unitDatas[bAD.unitID].cost);
+                uB.RequestRequestSpawnUnit(bAD.unitID);
+            }
+        }
         //player.GetComponent<Builder>().buildID = buildingID;
     }
 }

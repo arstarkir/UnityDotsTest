@@ -16,13 +16,20 @@ public class SelectionManager : MonoBehaviour
     Vector2 _start;
     bool _drag;
 
+    [SerializeField] Canvas canvas;
+    [SerializeField] RectTransform[] areas;
+
     void Awake()
     {
         _cam = Camera.main;
         actionSelectionUI = actionSelection.GetComponent<ActionSelectionUI>();
     }
+
     void Update()
     {
+        if(IsMouseInsideAny())
+            return;
+
         if (Input.GetMouseButtonDown(0))
         {
             _start = Input.mousePosition;
@@ -48,10 +55,17 @@ public class SelectionManager : MonoBehaviour
             UnitSelect(screen);
 
         actionSelectionUI.ClearActions();
+
         ulong bd = IdenticalBuildingsSelected();
-        if (bd != 0)
-            if (NetworkManager.Singleton.SpawnManager.SpawnedObjects[bd].TryGetComponent<BuildingAction>(out BuildingAction ba))
-                actionSelectionUI.PopulateActionUI(ba.unitIDs, ba);
+        if (bd == 0)
+            return;
+
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects[bd].TryGetComponent<BuildingAction>(out BuildingAction ba))
+        {
+            List<BuildingAction> bAs = new List<BuildingAction>();
+            bAs.Add(ba);
+            actionSelection.GetComponent<ActionSelectionUI>().PopulateActionUI(ba.unitIDs, bAs);
+        }
     }
 
     void UnitSelect(Vector2 screen)
@@ -102,9 +116,17 @@ public class SelectionManager : MonoBehaviour
         }
 
         ulong bd = IdenticalBuildingsSelected();
-        if (bd != 0)
-            if(NetworkManager.Singleton.SpawnManager.SpawnedObjects[bd].TryGetComponent<BuildingAction>(out BuildingAction ba))
-                actionSelection.GetComponent<ActionSelectionUI>().PopulateActionUI(ba.unitIDs, ba);
+        if (bd == 0)
+            return;
+
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects[bd].TryGetComponent<BuildingAction>(out BuildingAction ba))
+        {
+            List<BuildingAction> bAs = new List<BuildingAction>();
+            foreach (ulong id in _ids)
+                bAs.Add(NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].GetComponent<BuildingAction>());
+
+            actionSelection.GetComponent<ActionSelectionUI>().PopulateActionUI(ba.unitIDs, bAs);
+        }
     }
 
     void UnitBoxSelect(Rect box, Transform tr)
@@ -148,6 +170,14 @@ public class SelectionManager : MonoBehaviour
     static Rect RectFrom(Vector2 a, Vector2 b) =>
         new Rect(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y),
                  Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
+
+    public bool IsMouseInsideAny()
+    {
+        Vector2 mouse = Input.mousePosition;
+        Camera cam = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+
+        return areas.Any(rt => RectTransformUtility.RectangleContainsScreenPoint(rt, mouse, cam));
+    }
 
     public List<ulong> GetUnitSelectedIds()
     {

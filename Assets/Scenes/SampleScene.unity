@@ -826,25 +826,9 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4503138173510778833, guid: c52d9911ff4d62347864c7454a7cc6de, type: 3}
-      propertyPath: scrollStrengthCurve.m_Curve.Array.data[0].time
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4503138173510778833, guid: c52d9911ff4d62347864c7454a7cc6de, type: 3}
-      propertyPath: scrollStrengthCurve.m_Curve.Array.data[0].value
-      value: 0.9693756
-      objectReference: {fileID: 0}
-    - target: {fileID: 4812725353235990686, guid: c52d9911ff4d62347864c7454a7cc6de, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5020163488656216667, guid: c52d9911ff4d62347864c7454a7cc6de, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1993446144
-      objectReference: {fileID: 0}
-    - target: {fileID: 5890478090252837036, guid: c52d9911ff4d62347864c7454a7cc6de, type: 3}
-      propertyPath: m_Enabled
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6017108535120473218, guid: c52d9911ff4d62347864c7454a7cc6de, type: 3}
       propertyPath: m_AnchorMax.x
@@ -856,10 +840,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6017108535120473218, guid: c52d9911ff4d62347864c7454a7cc6de, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8974283670361353918, guid: c52d9911ff4d62347864c7454a7cc6de, type: 3}
-      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

@@ -3658,6 +3658,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionSelection: {fileID: 7191278875425585544}
+  canvas: {fileID: 173016612023055235}
+  areas:
+  - {fileID: 8007843485420896703}
+  - {fileID: 8883430972695080482}
 --- !u!81 &1809453293161431572
 AudioListener:
   m_ObjectHideFlags: 0
