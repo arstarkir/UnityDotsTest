@@ -5,5 +5,6 @@ public class BuildingData : ScriptableObject
 {
     public string buildingName;
     public string description;
+    public CostData cost;
     public GameObject prefab;
 }

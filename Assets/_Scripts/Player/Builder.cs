@@ -7,14 +7,23 @@ public class Builder : NetworkBehaviour
     [HideInInspector] public bool isBuilding = false;
     GameObject curBuilding;
     public int buildID = 0;
+    BuildingRegister buildingRegister;
+    PlayerResources pResources;
+
+    void Start()
+    {
+        pResources = GetComponent<PlayerResources>();
+        buildingRegister = Resources.Load<BuildingRegister>("SO/MainBuildingRegister");
+    }
 
     void Update()
     {
         if (!IsLocalPlayer)
             return;
 
-        if (Input.GetKeyDown(KeyCode.B) && !isBuilding)
+        if (Input.GetKeyDown(KeyCode.B) && !isBuilding && pResources.HasRes(buildingRegister.buildingDatas[buildID].cost))
         {
+            pResources.PayCost(buildingRegister.buildingDatas[buildID].cost);
             RequestSpawnBlueprintServerRpc(buildID);
             isBuilding = true;
         }
@@ -40,9 +49,9 @@ public class Builder : NetworkBehaviour
     [ServerRpc]
     void RequestSpawnBlueprintServerRpc(int buildID, ServerRpcParams rpcParams = default)
     {
+        BuildingRegister buildingRegister = Resources.Load<BuildingRegister>("SO/MainBuildingRegister");
         ulong requesterId = rpcParams.Receive.SenderClientId;
 
-        BuildingRegister buildingRegister = Resources.Load<BuildingRegister>("SO/MainBuildingRegister");
         GameObject temp = Instantiate(buildingRegister.buildingDatas[buildID].prefab);
         foreach (CoreBuilding buildingComp in temp.GetComponents<CoreBuilding>())
             buildingComp.enabled = false;

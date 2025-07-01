@@ -41,7 +41,7 @@ public class CameraControls : NetworkBehaviour
         mousePos.x -= Screen.width / 2;
         mousePos.z -= Screen.height / 2;
 
-        if (Mathf.Abs(mousePos.x) > Screen.width - Screen.width*borderSize || Mathf.Abs(mousePos.z) > Screen.height - Screen.width * borderSize)
+        if (Mathf.Abs(mousePos.x) > Screen.width / borderSize || Mathf.Abs(mousePos.z) > Screen.height / borderSize)
         {
             transform.position += mousePos * 0.01f * scrollStrengthCurve.Evaluate(scrolingTime) * Time.deltaTime;
             scrolingTime += Time.deltaTime;

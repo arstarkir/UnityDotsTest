@@ -14,4 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buildingName: Test
   description: This is a Test building
+  cost:
+    mCost: 0
+    fCost: 100
+    pCost: 0
   prefab: {fileID: 4909146624353110777, guid: c0c6d63198cad0f42a3cefb7ca906be3, type: 3}

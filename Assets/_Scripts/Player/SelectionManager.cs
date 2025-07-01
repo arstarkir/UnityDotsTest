@@ -41,21 +41,17 @@ public class SelectionManager : MonoBehaviour
 
     void ClickSelect(Vector2 screen)
     {
-        List<ulong> temp = new List<ulong>(_ids);
         ClearAll();
 
         BuildingSelect(screen);
         if(_ids.Count == 0)
             UnitSelect(screen);
-        if (_ids.Count == 0)
-            foreach (ulong id in temp)
-                _ids.Add(id);
 
         actionSelectionUI.ClearActions();
         ulong bd = IdenticalBuildingsSelected();
         if (bd != 0)
             if (NetworkManager.Singleton.SpawnManager.SpawnedObjects[bd].TryGetComponent<BuildingAction>(out BuildingAction ba))
-                actionSelectionUI.PopulateActionUI(ba.unitIDs);
+                actionSelectionUI.PopulateActionUI(ba.unitIDs, ba);
     }
 
     void UnitSelect(Vector2 screen)
@@ -75,7 +71,7 @@ public class SelectionManager : MonoBehaviour
         Ray ray = _cam.ScreenPointToRay(screen);
         if (!Physics.Raycast(ray, out var hit)) return;
 
-        CoreBuilding building = hit.collider.transform.GetComponent<UnitBuilding>();
+        CoreBuilding building = hit.collider.transform.GetComponent<CoreBuilding>();
         if (building == null) 
             return;
         if (!building.IsOwner)
@@ -108,7 +104,7 @@ public class SelectionManager : MonoBehaviour
         ulong bd = IdenticalBuildingsSelected();
         if (bd != 0)
             if(NetworkManager.Singleton.SpawnManager.SpawnedObjects[bd].TryGetComponent<BuildingAction>(out BuildingAction ba))
-                actionSelection.GetComponent<ActionSelectionUI>().PopulateActionUI(ba.unitIDs);
+                actionSelection.GetComponent<ActionSelectionUI>().PopulateActionUI(ba.unitIDs, ba);
     }
 
     void UnitBoxSelect(Rect box, Transform tr)

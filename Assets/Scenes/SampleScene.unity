@@ -826,6 +826,10 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4503138173510778833, guid: c52d9911ff4d62347864c7454a7cc6de, type: 3}
+      propertyPath: borderSize
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5020163488656216667, guid: c52d9911ff4d62347864c7454a7cc6de, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1993446144

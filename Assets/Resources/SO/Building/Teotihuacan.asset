@@ -14,4 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buildingName: Teotihuacan
   description: Main building (allows production of real units)
+  cost:
+    mCost: 0
+    fCost: 100
+    pCost: 0
   prefab: {fileID: 371404245313902897, guid: c0b60028f159edf4a8f7bcd1617b2618, type: 3}

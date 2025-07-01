@@ -42,10 +42,17 @@ public class StorageBuilding : CoreBuilding
 
     private void OnDestroy()
     {
-        if (OwnerClientId == NetworkManager.Singleton.LocalClientId && this.enabled)
+        try
         {
-            player.RemoveStorage(this);
-            player.AddRes(-curStorage, rType);
+            if (OwnerClientId == NetworkManager.Singleton.LocalClientId && this.enabled)
+            {
+                player.RemoveStorage(this);
+                player.AddRes(-curStorage, rType);
+            }
+        }
+        catch
+        {
+
         }
     }
 }

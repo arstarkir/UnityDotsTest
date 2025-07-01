@@ -3467,6 +3467,9 @@ GameObject:
   - component: {fileID: 5565137880481106144}
   - component: {fileID: 4563244276348178868}
   - component: {fileID: -7063854138676729461}
+  - component: {fileID: 214356962553806380}
+  - component: {fileID: 7793642350487768115}
+  - component: {fileID: 1229675090063566122}
   m_Layer: 0
   m_Name: Player
   m_TagString: MainCamera
@@ -3668,7 +3671,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  borderSize: 0.1
+  borderSize: 3
   active: {fileID: 0}
 --- !u!114 &2685147543443762617
 MonoBehaviour:
@@ -3788,6 +3791,54 @@ MonoBehaviour:
   unwalkableColour: {r: 1, g: 0, b: 0, a: 0.25}
   drawWalkable: 1
   drawUnwalkable: 1
+--- !u!114 &214356962553806380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3978795152394163180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023b140a4db01e44b92b054be2001546, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  rType: 0
+  maxStorage: 100
+  curStorage: 100
+--- !u!114 &7793642350487768115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3978795152394163180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023b140a4db01e44b92b054be2001546, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  rType: 1
+  maxStorage: 100
+  curStorage: 100
+--- !u!114 &1229675090063566122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3978795152394163180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023b140a4db01e44b92b054be2001546, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  rType: 2
+  maxStorage: 100
+  curStorage: 100
 --- !u!1 &4106136569877453645
 GameObject:
   m_ObjectHideFlags: 0

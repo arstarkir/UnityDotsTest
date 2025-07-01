@@ -10,7 +10,7 @@ public class ActionSelectionUI : MonoBehaviour
     List<string> shortcuts = new List<string>();
 
     List<GameObject> curActions = new List<GameObject>();
-    public void PopulateActionUI(List<int> unitId)
+    public void PopulateActionUI(List<int> unitId, BuildingAction bAction)
     {
         ClearActions();
         UnitRegister unitRegister = Resources.Load<UnitRegister>("SO/MainUnitRegister");
@@ -19,7 +19,9 @@ public class ActionSelectionUI : MonoBehaviour
             GameObject temp = Instantiate(actionButtonPref,actionSelection.transform);
             temp.GetComponent<RectTransform>().anchoredPosition = new Vector2(-200 + 125 * i, 0);
             temp.GetComponent<Image>().sprite = unitRegister.unitDatas[unitId[i]].sprite;
-            temp.GetComponent<Button>().onClick.AddListener(() =>  UnitSelected(0));
+            ButtonActionData bAD = temp.AddComponent<ButtonActionData>();
+            bAD.unitID = unitId[i];
+            temp.GetComponent<Button>().onClick.AddListener(() => UnitSelected(bAD, bAction));
             curActions.Add(temp);
         }
     }
@@ -31,8 +33,9 @@ public class ActionSelectionUI : MonoBehaviour
         curActions.Clear();
     }
 
-    public void UnitSelected(int unitID)
+    public void UnitSelected(ButtonActionData bAD, BuildingAction bAction)
     {
+        bAction.gameObject.GetComponent<UnitBuilding>().RequestRequestSpawnUnit(bAD.unitID);
         //player.GetComponent<Builder>().buildID = buildingID;
     }
 }

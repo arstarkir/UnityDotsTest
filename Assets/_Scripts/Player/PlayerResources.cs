@@ -7,14 +7,14 @@ public class PlayerResources : NetworkBehaviour
     [SerializeField] ResourcesUI resourcesUI;
 
     List<StorageBuilding> mStorage = new List<StorageBuilding>();
-    float maxMStorage = 100;
-    float curMAmount = 100;
+    float maxMStorage = 0;
+    float curMAmount = 0;
     List<StorageBuilding> fStorage = new List<StorageBuilding>();
-    float maxFStorage = 100;
-    float curFAmount = 100;
+    float maxFStorage = 0;
+    float curFAmount = 0;
     List<StorageBuilding> pStorage = new List<StorageBuilding>();
-    float maxPStorage = 100;
-    float curPAmount = 100;
+    float maxPStorage = 0;
+    float curPAmount = 0;
 
     void Start()
     {
@@ -27,16 +27,19 @@ public class PlayerResources : NetworkBehaviour
         {
             mStorage.Add(storageBuilding);
             maxMStorage += storageBuilding.maxStorage;
+            curMAmount += storageBuilding.curStorage;
         }
         if (storageBuilding.rType == ResTypes.Food)
         {
             fStorage.Add(storageBuilding);
             maxFStorage += storageBuilding.maxStorage;
+            curFAmount += storageBuilding.curStorage;
         }
         if (storageBuilding.rType == ResTypes.Power)
         {
             pStorage.Add(storageBuilding);
             maxPStorage += storageBuilding.maxStorage;
+            curPAmount += storageBuilding.curStorage;
         }
         UpdateAllUI();
     }
@@ -81,6 +84,13 @@ public class PlayerResources : NetworkBehaviour
             }
     }
 
+    public void PayCost(CostData cost)
+    {
+        AddRes(-cost.mCost, ResTypes.Minirals);
+        AddRes(-cost.fCost, ResTypes.Food);
+        AddRes(-cost.pCost, ResTypes.Power);
+    }
+
     public void RemoveStorage(StorageBuilding storageBuilding)
     {
         if (!HasStorageBuilding(storageBuilding))
@@ -121,6 +131,13 @@ public class PlayerResources : NetworkBehaviour
             pStorage.Contains(storageBuilding);
             return true;
         }
+        return false;
+    }
+
+    public bool HasRes(CostData cost)
+    {
+        if(cost.mCost <= curMAmount && cost.fCost <= curFAmount && cost.pCost <= curPAmount)
+            return true;
         return false;
     }
 

@@ -3,13 +3,10 @@ using UnityEngine;
 
 public class UnitBuilding : CoreBuilding
 {
-    void Update()
+    public void RequestRequestSpawnUnit(int unitID)
     {
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            RequestSpawnUnitServerRpc(0, this.transform.position + new Vector3(0, 0, -6));
-            Debug.Log("Spawned");
-        }
+        RequestSpawnUnitServerRpc(unitID, this.transform.position + new Vector3(0, 0, -6));
+        Debug.Log("Spawned");
     }
 
     [ServerRpc]
