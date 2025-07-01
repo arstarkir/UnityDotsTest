@@ -13,9 +13,14 @@ public class FlowFollower : NetworkBehaviour
     [SerializeField] LayerMask obstacleMask;
     [SerializeField] float arrivedEps = 0.5f;
 
+    [HideInInspector] public NetworkVariable<bool> IsMoveing = new (false);
+
     public override void OnNetworkSpawn()
     {
-        if (IsServer) finalTarget.Value = transform.position;
+        if (IsServer) 
+            finalTarget.Value = transform.position;
+
+        base.OnNetworkSpawn();
     }
 
     void Update()
@@ -37,6 +42,19 @@ public class FlowFollower : NetworkBehaviour
             Vector3 to = (finalTarget.Value - transform.position).normalized;
             Step(to);
         }
+        else
+        {
+            IsMoveing.Value = false;
+        }
+    }
+
+    [Rpc(SendTo.Server)]
+    public void MoveDirectRpc(Vector3 dest)
+    {
+        finalTarget.Value = dest;
+        Vector3 dir = (finalTarget.Value - transform.position).normalized;
+        Step(dir);
+        IsMoveing.Value = true;
     }
 
     bool Reached(Vector3 target, float tol)

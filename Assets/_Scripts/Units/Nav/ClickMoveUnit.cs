@@ -51,6 +51,9 @@ public class ClickMoveUnit : NetworkBehaviour
     [Rpc(SendTo.ClientsAndHost)]
     void AssignFormationClientRpc(ushort fieldId, ulong[] ids, Vector3[] slots)
     {
+        if (!IsServer) 
+            return;
+
         for (int i = 0; i < ids.Length; i++)
         {
             if (NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(ids[i], out var obj) &&
@@ -58,6 +61,7 @@ public class ClickMoveUnit : NetworkBehaviour
             {
                 ff.flowId.Value = fieldId;
                 ff.finalTarget.Value = slots[i];
+                ff.IsMoveing.Value = true;
             }
         }
     }

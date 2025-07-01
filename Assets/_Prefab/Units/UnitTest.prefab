@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4603057082361010234}
   - component: {fileID: 2098617426541060017}
   - component: {fileID: -5562108324925854071}
+  - component: {fileID: 7407135002845742178}
   m_Layer: 0
   m_Name: UnitTest
   m_TagString: Untagged
@@ -154,6 +155,25 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   arrivedEps: 0.5
+--- !u!114 &7407135002845742178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7913246730802463883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6243f899e5cddc241873e51d763a3704, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  maxHealth: 10
+  curHealth:
+    m_InternalValue: 10
+  regenSpeed: 5
+  regenDelayTime: 3
+  timeSinceDmg: 0
 --- !u!1001 &3217198027743177168
 PrefabInstance:
   m_ObjectHideFlags: 0

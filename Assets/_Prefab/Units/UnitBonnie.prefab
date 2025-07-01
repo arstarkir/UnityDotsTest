@@ -13,6 +13,9 @@ GameObject:
   - component: {fileID: 4603057082361010234}
   - component: {fileID: 2098617426541060017}
   - component: {fileID: -5562108324925854071}
+  - component: {fileID: -7544077733167615658}
+  - component: {fileID: -8236894072182249232}
+  - component: {fileID: 1901230011007947701}
   m_Layer: 0
   m_Name: UnitBonnie
   m_TagString: Untagged
@@ -154,6 +157,59 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   arrivedEps: 0.5
+--- !u!114 &-7544077733167615658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7913246730802463883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6243f899e5cddc241873e51d763a3704, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  maxHealth: 10
+  curHealth:
+    m_InternalValue: 100
+  regenSpeed: 5
+  regenDelayTime: 3
+  timeSinceDmg: 0
+--- !u!114 &-8236894072182249232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7913246730802463883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 967075458d9e94545949ab1a9816a377, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  spotR: 6
+  attackR: 1.4
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 256
+  myAttack: {fileID: 1901230011007947701}
+--- !u!114 &1901230011007947701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7913246730802463883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e810c78acc8290045b84e17d4c1fe70b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  cooldown: 1
+  damage: 2
 --- !u!1001 &3217198027743177168
 PrefabInstance:
   m_ObjectHideFlags: 0
