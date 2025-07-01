@@ -29,19 +29,37 @@ public class ClickMoveUnit : NetworkBehaviour
     [Rpc(SendTo.Server)]
     void SendMoveServerRpc(Vector3 goal, ulong[] unitIds)
     {
-        ushort id = FlowFieldManager.Instance.BuildField(goal);
-        AssignFieldClientRpc(goal, id, unitIds);
+        ushort fieldId = FlowFieldManager.Instance.BuildField(goal);
+
+        int n = unitIds.Length;
+        int side = Mathf.CeilToInt(Mathf.Sqrt(n));
+        float spacing = 1.2f;
+
+        Vector3[] slots = new Vector3[n];
+        for (int i = 0; i < n; i++)
+        {
+            int row = i / side;
+            int col = i % side;
+            float fx = (col - (side - 1) * 0.5f) * spacing;
+            float fz = (row - (side - 1) * 0.5f) * spacing;
+            slots[i] = goal + new Vector3(fx, 0f, fz);
+        }
+
+        AssignFormationClientRpc(fieldId, unitIds, slots);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    void AssignFieldClientRpc(Vector3 goal, ushort fieldId, ulong[] ids)
+    void AssignFormationClientRpc(ushort fieldId, ulong[] ids, Vector3[] slots)
     {
-        if (!FlowFieldManager.Instance.TrySample(fieldId, Vector3.zero, out _))
-            FlowFieldManager.Instance.BuildField(goal, fieldId);
-
-        foreach (ulong uid in ids)
-            if (NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(uid, out var o) &&
-                o.TryGetComponent(out FlowFollower f))
-                f.flowId.Value = fieldId;
+        for (int i = 0; i < ids.Length; i++)
+        {
+            if (NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(ids[i], out var obj) &&
+                obj.TryGetComponent(out FlowFollower ff))
+            {
+                ff.flowId.Value = fieldId;
+                ff.finalTarget.Value = slots[i];
+            }
+        }
     }
+
 }

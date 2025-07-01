@@ -146,7 +146,14 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   flowId:
     m_InternalValue: 0
+  finalTarget:
+    m_InternalValue: {x: 0, y: 0, z: 0}
   speed: 4
+  unitRadius: 0.4
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 128
+  arrivedEps: 0.5
 --- !u!1001 &3217198027743177168
 PrefabInstance:
   m_ObjectHideFlags: 0
