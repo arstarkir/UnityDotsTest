@@ -5,7 +5,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class SelectionManager : MonoBehaviour
+public class SelectionManager : NetworkBehaviour
 {
     [SerializeField] GameObject actionSelection;
     ActionSelectionUI actionSelectionUI;
@@ -21,7 +21,7 @@ public class SelectionManager : MonoBehaviour
 
     void Awake()
     {
-        _cam = Camera.main;
+        _cam = GetComponent<Camera>();
         actionSelectionUI = actionSelection.GetComponent<ActionSelectionUI>();
     }
 

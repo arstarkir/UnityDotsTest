@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Unity.Netcode;
 using UnityEditor;
@@ -14,10 +15,8 @@ public class CameraControls : NetworkBehaviour
 
     private void Start()
     {
-        if (IsLocalPlayer)
-            return;
-
-        gameObject.SetActive(false);
+        if (!IsOwner)
+            gameObject.SetActive(false);
     }
 
     void OnGUI()

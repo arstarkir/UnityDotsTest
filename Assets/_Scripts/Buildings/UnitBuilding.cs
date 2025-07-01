@@ -11,19 +11,24 @@ public class UnitBuilding : CoreBuilding
 
     private void Start()
     {
+        if (!IsOwner)
+            enabled = false;
+
         unitRegister = Resources.Load<UnitRegister>("SO/MainUnitRegister");
     }
 
     void Update()
     {
         if (unitQueue.Count > 0)
-            inProgressTime += Time.deltaTime;
-        
-        if(inProgressTime >= unitRegister.unitDatas[unitQueue.Peek()].spawnTime)
         {
-            RequestSpawnUnitServerRpc(unitQueue.Dequeue(), this.transform.position + new Vector3(0, 0, -6));
-            Debug.Log("Spawned");
-            inProgressTime = 0;
+            inProgressTime += Time.deltaTime;
+
+            if (inProgressTime >= unitRegister.unitDatas[unitQueue.Peek()].spawnTime)
+            {
+                RequestSpawnUnitServerRpc(unitQueue.Dequeue(), this.transform.position + new Vector3(0, 0, -6));
+                Debug.Log("Spawned");
+                inProgressTime = 0;
+            }
         }
     }
 
