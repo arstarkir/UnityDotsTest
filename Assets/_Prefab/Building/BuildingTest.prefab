@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2828819496922688132}
   - component: {fileID: 1621115548246774270}
   - component: {fileID: 3243916915244383722}
+  - component: {fileID: 8594878794744939217}
   m_Layer: 0
   m_Name: BuildingTest
   m_TagString: Untagged
@@ -208,6 +209,25 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   prodTime: 1
+--- !u!114 &8594878794744939217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4909146624353110777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6243f899e5cddc241873e51d763a3704, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  maxHealth: 100
+  curHealth:
+    m_InternalValue: 100
+  regenSpeed: 0
+  regenDelayTime: 3
+  timeSinceDmg: 0
 --- !u!1001 &4475046058697530384
 PrefabInstance:
   m_ObjectHideFlags: 0

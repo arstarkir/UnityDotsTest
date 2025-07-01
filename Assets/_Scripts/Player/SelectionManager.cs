@@ -207,5 +207,4 @@ public class SelectionManager : NetworkBehaviour
 
         return 0;
     }
-
 }
