@@ -9,6 +9,7 @@ public class Builder : NetworkBehaviour
     public int buildID = 0;
     BuildingRegister buildingRegister;
     PlayerResources pResources;
+    GameObject buildingHandler;
 
     void Start()
     {
@@ -18,6 +19,8 @@ public class Builder : NetworkBehaviour
 
     void Update()
     {
+        Event e = Event.current;
+        Debug.Log(e.capsLock);
         if (!IsLocalPlayer)
             return;
 
@@ -38,6 +41,20 @@ public class Builder : NetworkBehaviour
             Physics.Raycast(ray, out hit);
             RequestMoveBlueprintServerRpc(curBuilding.GetComponent<NetworkObject>().NetworkObjectId, hit.point);
 
+            if (Input.mouseScrollDelta.y != 0 && Event.current.capsLock)
+            {
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    RequestRotateBlueprintServerRpc(Vector3.left, Input.mouseScrollDelta.y);
+                }
+                else
+                {
+                    RequestRotateBlueprintServerRpc(Vector3.back, Input.mouseScrollDelta.y);
+                }
+
+            }
+
+
             if (Input.GetMouseButtonDown(0))
             {
                 isBuilding = false;
@@ -47,12 +64,19 @@ public class Builder : NetworkBehaviour
     }
 
     [ServerRpc]
+    void RequestRotateBlueprintServerRpc(Vector3 rot, float mouseYRot,ServerRpcParams rpcParams = default)
+    {
+        buildingHandler.transform.Rotate(rot , 15f * mouseYRot);
+    }
+
+    [ServerRpc]
     void RequestSpawnBlueprintServerRpc(int buildID, ServerRpcParams rpcParams = default)
     {
         BuildingRegister buildingRegister = Resources.Load<BuildingRegister>("SO/MainBuildingRegister");
         ulong requesterId = rpcParams.Receive.SenderClientId;
-
-        GameObject temp = Instantiate(buildingRegister.buildingDatas[buildID].prefab);
+        if (buildingHandler == null)
+            buildingHandler = new GameObject("buildingHandler");
+        GameObject temp = Instantiate(buildingRegister.buildingDatas[buildID].prefab, buildingHandler.transform);
         foreach (CoreBuilding buildingComp in temp.GetComponents<CoreBuilding>())
             buildingComp.enabled = false;
         NetworkObject netObj = temp.GetComponent<NetworkObject>();
@@ -98,6 +122,7 @@ public class Builder : NetworkBehaviour
         netObj.SpawnWithOwnership(requesterId);
         FlowFieldManager.Instance.MarkAreaUnwalkable(netObj.GetComponent<Collider>().bounds);
         NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId].Despawn();
+        Destroy(buildingHandler);
     }
 
     [ServerRpc]

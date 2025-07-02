@@ -14,4 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buildingName: Wall
   description: A wall
+  cost:
+    mCost: 0
+    fCost: 0
+    pCost: 0
   prefab: {fileID: 1472421769042705339, guid: c16b7a347732bae45bd03d8d30a7fa9e, type: 3}
