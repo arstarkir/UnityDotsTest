@@ -21,8 +21,7 @@ public class CameraControls : NetworkBehaviour
 
     void OnGUI()
     {
-        Event e = Event.current;
-        if (!e.capsLock)
+        if (!Input.GetKey(KeyCode.CapsLock))
             transform.position -= Vector3.up * 10 * Input.GetAxis("Mouse ScrollWheel");
     }
 

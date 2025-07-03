@@ -1,3 +1,5 @@
+using NUnit.Framework;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
@@ -9,7 +11,7 @@ public class Builder : NetworkBehaviour
     public int buildID = 0;
     BuildingRegister buildingRegister;
     PlayerResources pResources;
-    GameObject buildingHandler;
+    List<GameObject> buildingHandler = new List<GameObject>();
 
     void Start()
     {
@@ -19,8 +21,6 @@ public class Builder : NetworkBehaviour
 
     void Update()
     {
-        Event e = Event.current;
-        Debug.Log(e.capsLock);
         if (!IsLocalPlayer)
             return;
 
@@ -41,19 +41,13 @@ public class Builder : NetworkBehaviour
             Physics.Raycast(ray, out hit);
             RequestMoveBlueprintServerRpc(curBuilding.GetComponent<NetworkObject>().NetworkObjectId, hit.point);
 
-            if (Input.mouseScrollDelta.y != 0 && Event.current.capsLock)
+            if (Input.mouseScrollDelta.y != 0 && Input.GetKey(KeyCode.CapsLock))
             {
                 if (Input.GetKey(KeyCode.LeftShift))
-                {
                     RequestRotateBlueprintServerRpc(Vector3.left, Input.mouseScrollDelta.y);
-                }
                 else
-                {
-                    RequestRotateBlueprintServerRpc(Vector3.back, Input.mouseScrollDelta.y);
-                }
-
+                    RequestRotateBlueprintServerRpc(Vector3.up, Input.mouseScrollDelta.y);
             }
-
 
             if (Input.GetMouseButtonDown(0))
             {
@@ -66,7 +60,9 @@ public class Builder : NetworkBehaviour
     [ServerRpc]
     void RequestRotateBlueprintServerRpc(Vector3 rot, float mouseYRot,ServerRpcParams rpcParams = default)
     {
-        buildingHandler.transform.Rotate(rot , 15f * mouseYRot);
+        ulong requesterId = rpcParams.Receive.SenderClientId;
+        buildingHandler.FirstOrDefault(gameObject => gameObject.name == "buildingHandler_" + requesterId)
+            .transform.Rotate(rot , 15f * mouseYRot);
     }
 
     [ServerRpc]
@@ -74,9 +70,16 @@ public class Builder : NetworkBehaviour
     {
         BuildingRegister buildingRegister = Resources.Load<BuildingRegister>("SO/MainBuildingRegister");
         ulong requesterId = rpcParams.Receive.SenderClientId;
-        if (buildingHandler == null)
-            buildingHandler = new GameObject("buildingHandler");
-        GameObject temp = Instantiate(buildingRegister.buildingDatas[buildID].prefab, buildingHandler.transform);
+        GameObject curBuildingHandler = buildingHandler.FirstOrDefault(gameObject => gameObject.name == "buildingHandler_" + requesterId);
+        if (curBuildingHandler == null)
+        {
+            curBuildingHandler = new GameObject("buildingHandler_" + requesterId);
+            buildingHandler.Add(curBuildingHandler);
+            curBuildingHandler.AddComponent<NetworkObject>().Spawn();
+        }
+
+
+        GameObject temp = Instantiate(buildingRegister.buildingDatas[buildID].prefab);
         foreach (CoreBuilding buildingComp in temp.GetComponents<CoreBuilding>())
             buildingComp.enabled = false;
         NetworkObject netObj = temp.GetComponent<NetworkObject>();
@@ -85,6 +88,7 @@ public class Builder : NetworkBehaviour
         foreach (Transform obj in netObj.gameObject.GetComponentsInChildren<Transform>())
             obj.gameObject.layer = 2;
         netObj.SpawnWithOwnership(requesterId);
+        Debug.Log(netObj.TrySetParent(curBuildingHandler.GetComponent<NetworkObject>(), worldPositionStays: true));
         SetupBlueprintVisualsClientRpc(netObj.NetworkObjectId, buildID);
         NotifyClientOfSpawnedObjectClientRpc(netObj.NetworkObjectId, requesterId);
     }
@@ -120,9 +124,11 @@ public class Builder : NetworkBehaviour
         foreach (Transform t in netObj.gameObject.GetComponentsInChildren<Transform>(true))
             t.gameObject.layer = 7;
         netObj.SpawnWithOwnership(requesterId);
+        netObj.transform.rotation = buildingHandler.FirstOrDefault(gameObject => gameObject.name == "buildingHandler_" + requesterId).transform.rotation;
         FlowFieldManager.Instance.MarkAreaUnwalkable(netObj.GetComponent<Collider>().bounds);
+        NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId].TrySetParent((NetworkObject)null);
         NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId].Despawn();
-        Destroy(buildingHandler);
+        //Destroy(buildingHandler.FirstOrDefault(gameObject => gameObject.name == "buildingHandler_" + requesterId));
     }
 
     [ServerRpc]
