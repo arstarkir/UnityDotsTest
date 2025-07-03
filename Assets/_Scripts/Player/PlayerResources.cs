@@ -84,11 +84,21 @@ public class PlayerResources : NetworkBehaviour
             }
     }
 
-    public void PayCost(CostData cost)
+    public bool PayCost(CostData cost)
     {
+        if(!(curMAmount - cost.mCost >= 0 && curPAmount - cost.pCost >= 0 && curFAmount - cost.fCost >= 0))
+            return false;
         AddRes(-cost.mCost, ResTypes.Minirals);
         AddRes(-cost.fCost, ResTypes.Food);
         AddRes(-cost.pCost, ResTypes.Power);
+        return true;
+    }
+
+    public void RefundCost(CostData cost)
+    {
+        AddRes(cost.mCost, ResTypes.Minirals);
+        AddRes(cost.fCost, ResTypes.Food);
+        AddRes(cost.pCost, ResTypes.Power);
     }
 
     public void RemoveStorage(StorageBuilding storageBuilding)
