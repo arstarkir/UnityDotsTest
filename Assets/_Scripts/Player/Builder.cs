@@ -150,10 +150,73 @@ public class Builder : NetworkBehaviour
         groupBuildings.Clear();
         for (int i = 0; i < curBuildingHandler.transform.childCount; i++)
             groupBuildings.Add(curBuildingHandler.transform.GetChild(i).gameObject);
-        netObj.transform.localPosition = new Vector3(0, 0, 5) * (curBuildingHandler.transform.childCount - 1);
+
+        List<Transform> netObjSnaps = new List<Transform>();
+        foreach (Transform child in curBuildingHandler.transform.GetChild(0).GetComponentsInChildren<Transform>())
+        {
+            if (child.CompareTag("SnapPoint"))
+                netObjSnaps.Add(child);
+        }
+
+        float longestX = 5;
+        if (netObjSnaps.Count >= 2)
+        {
+            float minX = netObjSnaps.Min(t => t.position.x);
+            float maxX = netObjSnaps.Max(t => t.position.x);
+            longestX = maxX - minX;
+        }
+        netObj.transform.localPosition = new Vector3(longestX, 0, 0) * (curBuildingHandler.transform.childCount - 1);
 
         SetupBlueprintVisualsClientRpc(netObj.NetworkObjectId, buildID);
         NotifyClientOfSpawnedObjectClientRpc(curBuildingHandler.GetComponent<NetworkObject>().NetworkObjectId, requesterId);
+    }
+
+    [ServerRpc]
+    void SnapBuildingServerRpc(ulong objectId, Vector3 mousePos, ServerRpcParams rpcParams = default)
+    {
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(objectId, out NetworkObject netObj))
+            return;
+
+        RaycastHit[] hits = Physics.SphereCastAll(new Ray(mousePos, mousePos + new Vector3(0,1,0)),5);
+        RaycastHit[] snapHits = hits.Where(hit => hit.transform.CompareTag("SnapPoint")).ToArray();
+        
+        if(snapHits.Length == 0)
+        {
+            netObj.transform.localPosition = mousePos;
+            return;
+        }
+
+        ulong requesterId = rpcParams.Receive.SenderClientId;
+        GameObject curBuildingHandler = buildingHandler.FirstOrDefault(gameObject => gameObject.name == "buildingHandler_" + requesterId);
+        List<Transform> netObjSnaps = new List<Transform>();
+        foreach (Transform child in curBuildingHandler.transform.GetChild(0).GetComponentsInChildren<Transform>())
+        {
+            if(child.CompareTag("SnapPoint"))
+                netObjSnaps.Add(child);
+        }
+
+        Transform closestNetObjSnap = null;
+        Transform closestSnapHit = null;
+        float closestDistance = float.MaxValue;
+        float tempDistance;
+
+
+        foreach (Transform child in netObjSnaps)
+            foreach (RaycastHit hit in snapHits)
+            {
+                tempDistance = Vector3.Distance(child.position, hit.point);
+                if (closestDistance > tempDistance)
+                {
+                    closestDistance = tempDistance;
+                    closestNetObjSnap = child;
+                    closestSnapHit = hit.collider.transform;
+                }
+            }
+
+        if (closestNetObjSnap == null || closestSnapHit == null)
+            return;
+        Vector3 offset = closestSnapHit.position - closestNetObjSnap.position;
+        curBuildingHandler.transform.position += offset;
     }
 
     [ClientRpc]
@@ -199,12 +262,13 @@ public class Builder : NetworkBehaviour
             netBlueprint.TrySetParent((NetworkObject)null);
             netBlueprint.Despawn();
         }
+        curBuildingHandler.transform.position = new Vector3(0, 0, 0);
     }
 
     [ServerRpc]
     void RequestMoveBlueprintServerRpc(ulong objectId, Vector3 hitPoint, ServerRpcParams rpcParams = default)
     {
-        NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId].transform.position = hitPoint;
+        SnapBuildingServerRpc(objectId, hitPoint);
     }
 
     [ClientRpc]
