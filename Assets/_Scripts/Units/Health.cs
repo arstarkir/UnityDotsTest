@@ -11,15 +11,12 @@ public class Health : NetworkBehaviour
 
     private void Update()
     {
-        timeSinceDmg += Time.deltaTime;
-        if (timeSinceDmg >= regenDelayTime )
-            return;
-
-        if (curHealth.Value <= maxHealth)
-            curHealth.Value += regenSpeed * Time.deltaTime;
+        if(IsOwner)
+            RequestPassiveReganServerRpc();
     }
 
-    public void DealDmg(float amount)
+    [ServerRpc(RequireOwnership = false)]
+    public void RequestDealDmgServerRpc(float amount)
     {
         curHealth.Value -= amount;
         if(curHealth.Value <= 0)
@@ -30,10 +27,22 @@ public class Health : NetworkBehaviour
         timeSinceDmg = 0;
     }
 
-    public void Heal(float amount)
+    [ServerRpc(RequireOwnership = false)]
+    public void RequestHealServerRpc(float amount)
     {
         curHealth.Value += amount;
         if(curHealth.Value > maxHealth)
             curHealth.Value = maxHealth;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void RequestPassiveReganServerRpc()
+    {
+        timeSinceDmg += Time.deltaTime;
+        if (timeSinceDmg >= regenDelayTime)
+            return;
+
+        if (curHealth.Value <= maxHealth)
+            curHealth.Value += regenSpeed * Time.deltaTime;
     }
 }

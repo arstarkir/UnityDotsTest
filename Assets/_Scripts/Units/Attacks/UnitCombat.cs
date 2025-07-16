@@ -37,7 +37,7 @@ public class UnitCombat : NetworkBehaviour
         {
             Vector3 toEnemy = (target.transform.position - transform.position).normalized;
             Vector3 approach = target.transform.position - toEnemy * attackR * 0.9f;
-            mover.MoveDirectRpc(approach);
+            mover.RequestMoveDirectServerRpc(approach);
         }
         else
         {

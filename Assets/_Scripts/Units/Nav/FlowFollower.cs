@@ -43,18 +43,22 @@ public class FlowFollower : NetworkBehaviour
             Step(to);
         }
         else
-        {
-            IsMoveing.Value = false;
-        }
+            RequestIsMoveingChangeServerRpc(false);
     }
 
-    [Rpc(SendTo.Server)]
-    public void MoveDirectRpc(Vector3 dest)
+    [ServerRpc]
+    public void RequestMoveDirectServerRpc(Vector3 dest)
     {
         finalTarget.Value = dest;
         Vector3 dir = (finalTarget.Value - transform.position).normalized;
         Step(dir);
         IsMoveing.Value = true;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void RequestIsMoveingChangeServerRpc(bool changeTo)
+    {
+        IsMoveing.Value = changeTo;
     }
 
     bool Reached(Vector3 target, float tol)

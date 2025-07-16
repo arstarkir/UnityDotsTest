@@ -36,7 +36,6 @@ public class Builder : NetworkBehaviour
 
         if (isBuilding && curBuilding != null)
         {
-            Debug.Log("IsHost: " + IsHost);
             RequestChangeMaterialServerRpc(curBuilding.GetComponent<NetworkObject>().NetworkObjectId, true);
 
             Vector2 mousePos = Input.mousePosition;
@@ -151,7 +150,7 @@ public class Builder : NetworkBehaviour
         foreach (Transform obj in netObj.gameObject.GetComponentsInChildren<Transform>())
             obj.gameObject.layer = 2;
         netObj.SpawnWithOwnership(requesterId);
-        Debug.Log(netObj.TrySetParent(curBuildingHandler.GetComponent<NetworkObject>(), worldPositionStays: false));
+        netObj.TrySetParent(curBuildingHandler.GetComponent<NetworkObject>(), worldPositionStays: false);
 
         groupBuildings.Clear();
         for (int i = 0; i < curBuildingHandler.transform.childCount; i++)
@@ -182,9 +181,6 @@ public class Builder : NetworkBehaviour
     {
         if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(objectId, out NetworkObject netObj))
             return;
-
-        ulong requesterId = rpcParams.Receive.SenderClientId;
-        Debug.Log("netObjOwner " + netObj.OwnerClientId + " requesterId "+ requesterId);
 
         RaycastHit[] hits = Physics.SphereCastAll(new Ray(mousePos, mousePos + new Vector3(0,1,0)),5);
         RaycastHit[] snapHits = hits.Where(hit => hit.transform.CompareTag("SnapPoint")).ToArray();
