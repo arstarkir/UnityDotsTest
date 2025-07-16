@@ -19,17 +19,17 @@ public class UnitCombat : NetworkBehaviour
 
     void FixedUpdate()
     {
-        if (!IsServer || !IsSpawned) 
+        if (!IsServer || !IsSpawned)
             return;
 
-        if (target == null) 
+        if (target == null)
             CheckForTarget();
 
-        if (target == null) 
+        if (target == null)
             return;
 
         float sq = (target.transform.position - transform.position).sqrMagnitude;
-
+        float dist = Vector3.Distance(transform.position, target.transform.position);
         if (sq > attackR * attackR && !mover.IsMoveing.Value)
         {
             Vector3 toEnemy = (target.transform.position - transform.position).normalized;
@@ -37,10 +37,12 @@ public class UnitCombat : NetworkBehaviour
             mover.RequestMoveDirectServerRpc(approach);
         }
         else
+        if (dist < attackR)
         {
             myAttack.TryUse(target);
         }
-
+        else
+            target = null;
     }
 
     void CheckForTarget()
@@ -48,7 +50,7 @@ public class UnitCombat : NetworkBehaviour
         Collider[] hits = Physics.OverlapSphere(transform.position, spotR, targetMask);
         foreach (Collider c in hits)
         {
-            if (c.TryGetComponent(out Health h) && h.curHealth.Value > 0 && h.OwnerClientId != OwnerClientId)
+            if (c.TryGetComponent(out Health h) && h.curHealth.Value > 0 && h.OwnerClientId != OwnerClientId || c.gameObject.name.Contains("PunchingBag"))
             {
                 target = h;
                 break;

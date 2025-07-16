@@ -46,7 +46,7 @@ public class FlowFollower : NetworkBehaviour
             RequestIsMoveingChangeServerRpc(false);
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     public void RequestMoveDirectServerRpc(Vector3 dest)
     {
         finalTarget.Value = dest;
