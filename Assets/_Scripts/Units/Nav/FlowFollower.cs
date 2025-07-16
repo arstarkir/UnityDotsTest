@@ -25,14 +25,14 @@ public class FlowFollower : NetworkBehaviour
 
     void Update()
     {
-        if (!IsSpawned) 
+        if (!IsSpawned || !IsServer) 
             return;
 
         if (!Reached(finalTarget.Value, arrivedEps * 9f))
         {
             if (FlowFieldManager.Instance.TrySample(flowId.Value, transform.position, out float2 dir))
             {
-                Step(new Vector3(dir.x, 0f, dir.y));
+                RequestStepServerRpc(new Vector3(dir.x, 0f, dir.y));
                 return;
             }
         }
@@ -40,7 +40,7 @@ public class FlowFollower : NetworkBehaviour
         if (!Reached(finalTarget.Value, 0.05f))
         {
             Vector3 to = (finalTarget.Value - transform.position).normalized;
-            Step(to);
+            RequestStepServerRpc(to);
         }
         else
             RequestIsMoveingChangeServerRpc(false);
@@ -51,7 +51,7 @@ public class FlowFollower : NetworkBehaviour
     {
         finalTarget.Value = dest;
         Vector3 dir = (finalTarget.Value - transform.position).normalized;
-        Step(dir);
+        RequestStepServerRpc(dir);
         IsMoveing.Value = true;
     }
 
@@ -66,7 +66,8 @@ public class FlowFollower : NetworkBehaviour
         return (transform.position - target).sqrMagnitude <= tol * tol;
     }
 
-    void Step(Vector3 dir)
+    [ServerRpc(RequireOwnership = false)]
+    void RequestStepServerRpc(Vector3 dir)
     {
         Vector3 next = transform.position + dir * speed * Time.deltaTime;
         if (!Physics.CheckSphere(next, unitRadius * 0.9f, obstacleMask))

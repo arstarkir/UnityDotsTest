@@ -19,10 +19,7 @@ public class UnitCombat : NetworkBehaviour
 
     void FixedUpdate()
     {
-        if (!IsOwner) 
-            return;
-
-        if (!IsSpawned)
+        if (!IsServer || !IsSpawned) 
             return;
 
         if (target == null) 
