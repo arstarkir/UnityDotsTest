@@ -3856,6 +3856,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   isBuilding: 0
   buildID: 0
+  buildingHandlerPref: {fileID: 2788541800796567367, guid: 3d778aaae94cdc048ae3c1f69feb6a60, type: 3}
 --- !u!114 &5565137880481106144
 MonoBehaviour:
   m_ObjectHideFlags: 0

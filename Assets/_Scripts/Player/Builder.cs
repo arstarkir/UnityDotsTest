@@ -8,10 +8,12 @@ using UnityEngine;
 public class Builder : NetworkBehaviour
 {
     [HideInInspector] public bool isBuilding = false;
-    GameObject curBuilding;
+    GameObject curBuilding = null;
     public int buildID = 0;
     BuildingRegister buildingRegister;
     PlayerResources pResources;
+    
+    [SerializeField] GameObject buildingHandlerPref;
     List<GameObject> buildingHandler = new List<GameObject>();
     List<GameObject> groupBuildings = new List<GameObject>();
 
@@ -30,18 +32,20 @@ public class Builder : NetworkBehaviour
             if (pResources.PayCost(buildingRegister.buildingDatas[buildID].cost))
             {
                 RequestSpawnBlueprintServerRpc(buildID);
-                isBuilding = true;
             }
 
         if (isBuilding && curBuilding != null)
         {
+            Debug.Log("IsHost: " + IsHost);
             RequestChangeMaterialServerRpc(curBuilding.GetComponent<NetworkObject>().NetworkObjectId, true);
 
             Vector2 mousePos = Input.mousePosition;
             Ray ray = GetComponentInChildren<Camera>().ScreenPointToRay(mousePos);
             RaycastHit hit;
             Physics.Raycast(ray, out hit);
-            RequestMoveBlueprintServerRpc(curBuilding.GetComponent<NetworkObject>().NetworkObjectId, hit.point);
+
+            RequestMoveBlueprintServerRpc(curBuilding.GetComponent<NetworkObject>().NetworkObjectId, hit.point,
+                !Input.GetKey(KeyCode.LeftControl));
 
             if (Input.mouseScrollDelta.y != 0 && Input.GetKey(KeyCode.CapsLock))
             {
@@ -131,9 +135,11 @@ public class Builder : NetworkBehaviour
         GameObject curBuildingHandler = buildingHandler.FirstOrDefault(gameObject => gameObject.name == "buildingHandler_" + requesterId);
         if (curBuildingHandler == null)
         {
-            curBuildingHandler = new GameObject("buildingHandler_" + requesterId);
+            curBuildingHandler = Instantiate(buildingHandlerPref);
+            curBuildingHandler.name = "buildingHandler_" + requesterId;
+            curBuildingHandler.GetComponent<NetworkObject>().name = "buildingHandler_" + requesterId;
+            curBuildingHandler.GetComponent<NetworkObject>().SpawnWithOwnership(requesterId);
             buildingHandler.Add(curBuildingHandler);
-            curBuildingHandler.AddComponent<NetworkObject>().Spawn();
         }
             
         GameObject temp = Instantiate(buildingRegister.buildingDatas[buildID].prefab);
@@ -171,11 +177,14 @@ public class Builder : NetworkBehaviour
         NotifyClientOfSpawnedObjectClientRpc(curBuildingHandler.GetComponent<NetworkObject>().NetworkObjectId, requesterId);
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     void SnapBuildingServerRpc(ulong objectId, Vector3 mousePos, ServerRpcParams rpcParams = default)
     {
         if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(objectId, out NetworkObject netObj))
             return;
+
+        ulong requesterId = rpcParams.Receive.SenderClientId;
+        Debug.Log("netObjOwner " + netObj.OwnerClientId + " requesterId "+ requesterId);
 
         RaycastHit[] hits = Physics.SphereCastAll(new Ray(mousePos, mousePos + new Vector3(0,1,0)),5);
         RaycastHit[] snapHits = hits.Where(hit => hit.transform.CompareTag("SnapPoint")).ToArray();
@@ -186,10 +195,9 @@ public class Builder : NetworkBehaviour
             return;
         }
 
-        ulong requesterId = rpcParams.Receive.SenderClientId;
-        GameObject curBuildingHandler = buildingHandler.FirstOrDefault(gameObject => gameObject.name == "buildingHandler_" + requesterId);
+
         List<Transform> netObjSnaps = new List<Transform>();
-        foreach (Transform child in curBuildingHandler.transform.GetChild(0).GetComponentsInChildren<Transform>())
+        foreach (Transform child in netObj.transform.GetChild(0).GetComponentsInChildren<Transform>())
         {
             if(child.CompareTag("SnapPoint"))
                 netObjSnaps.Add(child);
@@ -199,7 +207,6 @@ public class Builder : NetworkBehaviour
         Transform closestSnapHit = null;
         float closestDistance = float.MaxValue;
         float tempDistance;
-
 
         foreach (Transform child in netObjSnaps)
             foreach (RaycastHit hit in snapHits)
@@ -214,9 +221,13 @@ public class Builder : NetworkBehaviour
             }
 
         if (closestNetObjSnap == null || closestSnapHit == null)
+        {
+            netObj.transform.position = mousePos;
             return;
+        }
+
         Vector3 offset = closestSnapHit.position - closestNetObjSnap.position;
-        curBuildingHandler.transform.position += offset;
+        netObj.transform.position += offset;
     }
 
     [ClientRpc]
@@ -266,9 +277,12 @@ public class Builder : NetworkBehaviour
     }
 
     [ServerRpc]
-    void RequestMoveBlueprintServerRpc(ulong objectId, Vector3 hitPoint, ServerRpcParams rpcParams = default)
+    void RequestMoveBlueprintServerRpc(ulong objectId, Vector3 hitPoint, bool isSnapable = true, ServerRpcParams rpcParams = default)
     {
-        SnapBuildingServerRpc(objectId, hitPoint);
+        if(isSnapable)
+            SnapBuildingServerRpc(objectId, hitPoint, rpcParams);
+        else
+            NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId].transform.position = hitPoint;
     }
 
     [ClientRpc]
@@ -279,6 +293,7 @@ public class Builder : NetworkBehaviour
 
         NetworkObject spawnedObj = NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId];
         curBuilding = spawnedObj.gameObject;
+        isBuilding = true;
     }
 
     [ServerRpc]
