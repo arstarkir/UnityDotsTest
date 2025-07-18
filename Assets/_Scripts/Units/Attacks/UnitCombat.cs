@@ -4,17 +4,17 @@ using UnityEngine;
 [RequireComponent(typeof(FlowFollower))]
 public class UnitCombat : NetworkBehaviour
 {
-    [SerializeField] float spotR = 6f;
-    [SerializeField] float attackR = 1.4f;
+    [HideInInspector] public Health target;
     [SerializeField] LayerMask targetMask;
-    [SerializeField] CoreAttack myAttack;
+    [SerializeField] CoreAttack attack;
 
-    FlowFollower mover;
-    Health target;
-
-    void Awake()
+    [HideInInspector] public FlowFollower mover;
+    float spotR = 0;
+    
+    private void Awake()
     {
         mover = GetComponent<FlowFollower>();
+        spotR = attack.spotR;
     }
 
     void FixedUpdate()
@@ -28,20 +28,7 @@ public class UnitCombat : NetworkBehaviour
         if (target == null)
             return;
 
-        float sq = (target.transform.position - transform.position).sqrMagnitude;
-        float dist = Vector3.Distance(transform.position, target.transform.position);
-        if (sq > attackR * attackR && !mover.IsMoveing.Value)
-        {
-            Vector3 toEnemy = (target.transform.position - transform.position).normalized;
-            Vector3 approach = target.transform.position - toEnemy * attackR * 0.9f;
-            mover.RequestMoveDirectServerRpc(approach);
-        }
-        else
-        if (dist < attackR)
-        {
-            myAttack.TryUse(target);
-        }
-        else
+        if(!attack.Pursuit(this,target.transform))
             target = null;
     }
 
