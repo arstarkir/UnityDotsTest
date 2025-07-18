@@ -14,4 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buildingName: Chernobyl Nuclear Power
   description: I would be careful with this one
+  cost:
+    mCost: 100
+    fCost: 0
+    pCost: 0
   prefab: {fileID: 8332962215768935062, guid: 16f5b256ae4febc43b3b270997326e3a, type: 3}

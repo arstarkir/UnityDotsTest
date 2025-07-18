@@ -337,6 +337,16 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 1
+--- !u!1 &578862709 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3468717190062776255, guid: c52d9911ff4d62347864c7454a7cc6de, type: 3}
+  m_PrefabInstance: {fileID: 1855476948}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &593224222 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 481290096330814077, guid: c52d9911ff4d62347864c7454a7cc6de, type: 3}
+  m_PrefabInstance: {fileID: 1855476948}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &757906785 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2772932570766502377, guid: 1bf58b00dc1505845a8685da251f4197, type: 3}
@@ -907,6 +917,14 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2645819341211080874, guid: c52d9911ff4d62347864c7454a7cc6de, type: 3}
+      propertyPath: mCounter
+      value: 
+      objectReference: {fileID: 578862709}
+    - target: {fileID: 2645819341211080874, guid: c52d9911ff4d62347864c7454a7cc6de, type: 3}
+      propertyPath: pCounter
+      value: 
+      objectReference: {fileID: 593224222}
     - target: {fileID: 3346440767808398873, guid: c52d9911ff4d62347864c7454a7cc6de, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
