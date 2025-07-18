@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -5562108324925854071}
   - component: {fileID: -7544077733167615658}
   - component: {fileID: -8236894072182249232}
-  - component: {fileID: -6382460644168106904}
+  - component: {fileID: 8720140014097665366}
   m_Layer: 0
   m_Name: UnitBonnie
   m_TagString: Untagged
@@ -197,9 +197,9 @@ MonoBehaviour:
   targetMask:
     serializedVersion: 2
     m_Bits: 256
-  attack: {fileID: -6382460644168106904}
+  attack: {fileID: 8720140014097665366}
   mover: {fileID: 0}
---- !u!114 &-6382460644168106904
+--- !u!114 &8720140014097665366
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -208,14 +208,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 7913246730802463883}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e810c78acc8290045b84e17d4c1fe70b, type: 3}
+  m_Script: {fileID: 11500000, guid: c1a10001b05401b42b18978a0a8d0b6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   spotR: 6
   attackR: 1.4
   cooldown: 1
-  damage: 2
+  damage: 10
+  jumpSpeed: 50
 --- !u!1001 &716434961244468027
 PrefabInstance:
   m_ObjectHideFlags: 0

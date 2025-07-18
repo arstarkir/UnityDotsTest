@@ -73,4 +73,15 @@ public class FlowFollower : NetworkBehaviour
         if (!Physics.CheckSphere(next, unitRadius * 0.9f, obstacleMask))
             transform.position = next;
     }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void RequestJumpServerRpc(Vector3 dest,float jumpSpeed)
+    {
+        finalTarget.Value = dest;
+        Vector3 dir = (finalTarget.Value - transform.position).normalized;
+        Vector3 next = transform.position + dir * jumpSpeed * Time.deltaTime;
+        if (!Physics.CheckSphere(next, unitRadius * 0.9f, obstacleMask))
+            transform.position = next;
+        IsMoveing.Value = true;
+    }
 }
